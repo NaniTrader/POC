@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NaniTrader.Entities.Exchanges;
+using NaniTrader.Entities.Misc;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
@@ -12,6 +14,9 @@ namespace NaniTrader.Data;
 
 public class NaniTraderDbContext : AbpDbContext<NaniTraderDbContext>
 {
+    public DbSet<Exchange> Exchanges { get; set; }
+    public DbSet<Country> Countries { get; set; }
+
     public NaniTraderDbContext(DbContextOptions<NaniTraderDbContext> options)
         : base(options)
     {

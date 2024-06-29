@@ -47,6 +47,8 @@ using Volo.Abp.Security.Claims;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.Uow;
 using Volo.Abp.VirtualFileSystem;
+using System.Text.Json.Serialization;
+using Volo.Abp.Json.SystemTextJson;
 
 namespace NaniTrader;
 
@@ -102,252 +104,252 @@ namespace NaniTrader;
 )]
 public class NaniTraderHostModule : AbpModule
 {
-        public override void PreConfigureServices(ServiceConfigurationContext context)
+    public override void PreConfigureServices(ServiceConfigurationContext context)
+    {
+        var hostingEnvironment = context.Services.GetHostingEnvironment();
+        var configuration = context.Services.GetConfiguration();
+
+        context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
         {
-            var hostingEnvironment = context.Services.GetHostingEnvironment();
-            var configuration = context.Services.GetConfiguration();
+            options.AddAssemblyResource(
+                typeof(NaniTraderResource)
+            );
+        });
 
-            context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
+        PreConfigure<OpenIddictBuilder>(builder =>
+        {
+            builder.AddValidation(options =>
             {
-                options.AddAssemblyResource(
-                    typeof(NaniTraderResource)
-                );
+                options.AddAudiences("NaniTrader");
+                options.UseLocalServer();
+                options.UseAspNetCore();
+            });
+        });
+
+        if (!hostingEnvironment.IsDevelopment())
+        {
+            PreConfigure<AbpOpenIddictAspNetCoreOptions>(options =>
+            {
+                options.AddDevelopmentEncryptionAndSigningCertificate = false;
             });
 
-            PreConfigure<OpenIddictBuilder>(builder =>
+            PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
             {
-                builder.AddValidation(options =>
-                {
-                    options.AddAudiences("NaniTrader");
-                    options.UseLocalServer();
-                    options.UseAspNetCore();
-                });
+                serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", "8997415f-b0bd-4ef1-9da7-952f1d991f56");
             });
+        }
+    }
 
-            if (!hostingEnvironment.IsDevelopment())
-            {
-                PreConfigure<AbpOpenIddictAspNetCoreOptions>(options =>
-                {
-                    options.AddDevelopmentEncryptionAndSigningCertificate = false;
-                });
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        var hostingEnvironment = context.Services.GetHostingEnvironment();
+        var configuration = context.Services.GetConfiguration();
 
-                PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
-                {
-                    serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", "8997415f-b0bd-4ef1-9da7-952f1d991f56");
-                });
-            }
+        if (hostingEnvironment.IsDevelopment())
+        {
+            context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
         }
 
-        public override void ConfigureServices(ServiceConfigurationContext context)
-        {
-            var hostingEnvironment = context.Services.GetHostingEnvironment();
-            var configuration = context.Services.GetConfiguration();
+        ConfigureAuthentication(context);
+        ConfigureBundles();
+        ConfigureMultiTenancy();
+        ConfigureUrls(configuration);
+        ConfigureAutoMapper(context);
+        ConfigureSwagger(context.Services, configuration);
+        ConfigureAutoApiControllers();
+        ConfigureVirtualFiles(hostingEnvironment);
+        ConfigureCors(context, configuration);
+        ConfigureDataProtection(context);
+        ConfigureEfCore(context);
+    }
 
+    private void ConfigureAuthentication(ServiceConfigurationContext context)
+    {
+        context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+        context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>
+        {
+            options.IsDynamicClaimsEnabled = true;
+        });
+    }
+
+    private void ConfigureBundles()
+    {
+        Configure<AbpBundlingOptions>(options =>
+        {
+            options.StyleBundles.Configure(
+                LeptonXLiteThemeBundles.Styles.Global,
+                bundle => { bundle.AddFiles("/global-styles.css"); }
+            );
+        });
+    }
+
+    private void ConfigureMultiTenancy()
+    {
+        Configure<AbpMultiTenancyOptions>(options =>
+        {
+            options.IsEnabled = MultiTenancyConsts.IsEnabled;
+        });
+    }
+
+    private void ConfigureUrls(IConfiguration configuration)
+    {
+        Configure<AppUrlOptions>(options =>
+        {
+            options.Applications["MVC"].RootUrl = configuration["App:SelfUrl"];
+            options.RedirectAllowedUrls.AddRange(configuration["App:RedirectAllowedUrls"]?.Split(',') ?? Array.Empty<string>());
+        });
+    }
+
+    private void ConfigureVirtualFiles(IWebHostEnvironment hostingEnvironment)
+    {
+        Configure<AbpVirtualFileSystemOptions>(options =>
+        {
+            options.FileSets.AddEmbedded<NaniTraderHostModule>();
             if (hostingEnvironment.IsDevelopment())
             {
-                context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
+                /* Using physical files in development, so we don't need to recompile on changes */
+                options.FileSets.ReplaceEmbeddedByPhysical<NaniTraderHostModule>(hostingEnvironment.ContentRootPath);
             }
+        });
+    }
 
-            ConfigureAuthentication(context);
-            ConfigureBundles();
-            ConfigureMultiTenancy();
-            ConfigureUrls(configuration);
-            ConfigureAutoMapper(context);
-            ConfigureSwagger(context.Services, configuration);
-            ConfigureAutoApiControllers();
-            ConfigureVirtualFiles(hostingEnvironment);
-            ConfigureCors(context, configuration);
-            ConfigureDataProtection(context);
-            ConfigureEfCore(context);
-        }
-
-        private void ConfigureAuthentication(ServiceConfigurationContext context)
+    private void ConfigureAutoApiControllers()
+    {
+        Configure<AbpAspNetCoreMvcOptions>(options =>
         {
-            context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
-            context.Services.Configure<AbpClaimsPrincipalFactoryOptions>(options =>
+            options.ConventionalControllers.Create(typeof(NaniTraderHostModule).Assembly);
+        });
+    }
+
+    private void ConfigureSwagger(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAbpSwaggerGenWithOAuth(
+            configuration["AuthServer:Authority"]!,
+            new Dictionary<string, string>
             {
-                options.IsDynamicClaimsEnabled = true;
-            });
-        }
-
-        private void ConfigureBundles()
-        {
-            Configure<AbpBundlingOptions>(options =>
-            {
-                options.StyleBundles.Configure(
-                    LeptonXLiteThemeBundles.Styles.Global,
-                    bundle => { bundle.AddFiles("/global-styles.css"); }
-                );
-            });
-        }
-
-        private void ConfigureMultiTenancy()
-        {
-            Configure<AbpMultiTenancyOptions>(options =>
-            {
-                options.IsEnabled = MultiTenancyConsts.IsEnabled;
-            });
-        }
-
-        private void ConfigureUrls(IConfiguration configuration)
-        {
-            Configure<AppUrlOptions>(options =>
-            {
-                options.Applications["MVC"].RootUrl = configuration["App:SelfUrl"];
-                options.RedirectAllowedUrls.AddRange(configuration["App:RedirectAllowedUrls"]?.Split(',') ?? Array.Empty<string>());
-            });
-        }
-
-        private void ConfigureVirtualFiles(IWebHostEnvironment hostingEnvironment)
-        {
-            Configure<AbpVirtualFileSystemOptions>(options =>
-            {
-                options.FileSets.AddEmbedded<NaniTraderHostModule>();
-                if (hostingEnvironment.IsDevelopment())
-                {
-                    /* Using physical files in development, so we don't need to recompile on changes */
-                    options.FileSets.ReplaceEmbeddedByPhysical<NaniTraderHostModule>(hostingEnvironment.ContentRootPath);
-                }
-            });
-        }
-
-        private void ConfigureAutoApiControllers()
-        {
-            Configure<AbpAspNetCoreMvcOptions>(options =>
-            {
-                options.ConventionalControllers.Create(typeof(NaniTraderHostModule).Assembly);
-            });
-        }
-
-        private void ConfigureSwagger(IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddAbpSwaggerGenWithOAuth(
-                configuration["AuthServer:Authority"]!,
-                new Dictionary<string, string>
-                {
                         {"NaniTrader", "NaniTrader API"}
-                },
-                options =>
-                {
-                    options.SwaggerDoc("v1", new OpenApiInfo { Title = "NaniTrader API", Version = "v1" });
-                    options.DocInclusionPredicate((docName, description) => true);
-                    options.CustomSchemaIds(type => type.FullName);
-                });
-        }
-
-        private void ConfigureAutoMapper(ServiceConfigurationContext context)
-        {
-            context.Services.AddAutoMapperObjectMapper<NaniTraderHostModule>();
-            Configure<AbpAutoMapperOptions>(options =>
+            },
+            options =>
             {
-                /* Uncomment `validate: true` if you want to enable the Configuration Validation feature.
-                 * See AutoMapper's documentation to learn what it is:
-                 * https://docs.automapper.org/en/stable/Configuration-validation.html
-                 */
-                options.AddMaps<NaniTraderHostModule>(/* validate: true */);
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "NaniTrader API", Version = "v1" });
+                options.DocInclusionPredicate((docName, description) => true);
+                options.CustomSchemaIds(type => type.FullName);
             });
-        }
+    }
 
-        private void ConfigureCors(ServiceConfigurationContext context, IConfiguration configuration)
+    private void ConfigureAutoMapper(ServiceConfigurationContext context)
+    {
+        context.Services.AddAutoMapperObjectMapper<NaniTraderHostModule>();
+        Configure<AbpAutoMapperOptions>(options =>
         {
-            context.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder
-                        .WithOrigins(
-                            configuration["App:CorsOrigins"]?
-                                .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                .Select(o => o.RemovePostFix("/"))
-                                .ToArray() ?? Array.Empty<string>()
-                        )
-                        .WithAbpExposedHeaders()
-                        .SetIsOriginAllowedToAllowWildcardSubdomains()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                });
-            });
-        }
+            /* Uncomment `validate: true` if you want to enable the Configuration Validation feature.
+             * See AutoMapper's documentation to learn what it is:
+             * https://docs.automapper.org/en/stable/Configuration-validation.html
+             */
+            options.AddMaps<NaniTraderHostModule>(/* validate: true */);
+        });
+    }
 
-        private void ConfigureDataProtection(ServiceConfigurationContext context)
+    private void ConfigureCors(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        context.Services.AddCors(options =>
         {
-            context.Services.AddDataProtection().SetApplicationName("NaniTrader");
-        }
+            options.AddDefaultPolicy(builder =>
+            {
+                builder
+                    .WithOrigins(
+                        configuration["App:CorsOrigins"]?
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(o => o.RemovePostFix("/"))
+                            .ToArray() ?? Array.Empty<string>()
+                    )
+                    .WithAbpExposedHeaders()
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+        });
+    }
 
-        private void ConfigureEfCore(ServiceConfigurationContext context)
+    private void ConfigureDataProtection(ServiceConfigurationContext context)
+    {
+        context.Services.AddDataProtection().SetApplicationName("NaniTrader");
+    }
+
+    private void ConfigureEfCore(ServiceConfigurationContext context)
+    {
+        context.Services.AddAbpDbContext<NaniTraderDbContext>(options =>
         {
-            context.Services.AddAbpDbContext<NaniTraderDbContext>(options =>
-            {
-                /* You can remove "includeAllEntities: true" to create
-                 * default repositories only for aggregate roots
-                 * Documentation: https://docs.abp.io/en/abp/latest/Entity-Framework-Core#add-default-repositories
-                 */
-                options.AddDefaultRepositories(includeAllEntities: true);
-            });
+            /* You can remove "includeAllEntities: true" to create
+             * default repositories only for aggregate roots
+             * Documentation: https://docs.abp.io/en/abp/latest/Entity-Framework-Core#add-default-repositories
+             */
+            options.AddDefaultRepositories(includeAllEntities: true);
+        });
 
-            Configure<AbpDbContextOptions>(options =>
-            {
-                options.Configure(configurationContext =>
-                {
-                    configurationContext.UseSqlServer();
-                });
-            });
-
-        }
-
-        public override void OnApplicationInitialization(ApplicationInitializationContext context)
+        Configure<AbpDbContextOptions>(options =>
         {
-            var app = context.GetApplicationBuilder();
-            var env = context.GetEnvironment();
-
-            if (env.IsDevelopment())
+            options.Configure(configurationContext =>
             {
-                app.UseWebAssemblyDebugging();
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseAbpRequestLocalization();
-
-            if (!env.IsDevelopment())
-            {
-                app.UseErrorPage();
-            }
-
-            app.UseCorrelationId();
-            app.UseBlazorFrameworkFiles();
-            app.UseStaticFiles();
-            app.UseRouting();
-            app.UseCors();
-            app.UseAuthentication();
-            app.UseAbpOpenIddictValidation();
-
-            if (MultiTenancyConsts.IsEnabled)
-            {
-                app.UseMultiTenancy();
-            }
-
-            app.UseUnitOfWork();
-            app.UseDynamicClaims();
-            app.UseAuthorization();
-
-            app.UseSwagger();
-            app.UseAbpSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "NaniTrader API");
-
-                var configuration = context.GetConfiguration();
-                options.OAuthClientId(configuration["AuthServer:SwaggerClientId"]);
-                options.OAuthScopes("NaniTrader");
+                configurationContext.UseSqlServer();
             });
+        });
 
-            app.UseAuditing();
-            app.UseAbpSerilogEnrichers();
-            app.UseConfiguredEndpoints();
+    }
 
-            if (app is WebApplication webApp)
-            {
-                webApp.MapFallbackToFile("index.html");
-            }
+    public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    {
+        var app = context.GetApplicationBuilder();
+        var env = context.GetEnvironment();
+
+        if (env.IsDevelopment())
+        {
+            app.UseWebAssemblyDebugging();
+            app.UseDeveloperExceptionPage();
         }
+
+        app.UseAbpRequestLocalization();
+
+        if (!env.IsDevelopment())
+        {
+            app.UseErrorPage();
+        }
+
+        app.UseCorrelationId();
+        app.UseBlazorFrameworkFiles();
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.UseCors();
+        app.UseAuthentication();
+        app.UseAbpOpenIddictValidation();
+
+        if (MultiTenancyConsts.IsEnabled)
+        {
+            app.UseMultiTenancy();
+        }
+
+        app.UseUnitOfWork();
+        app.UseDynamicClaims();
+        app.UseAuthorization();
+
+        app.UseSwagger();
+        app.UseAbpSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "NaniTrader API");
+
+            var configuration = context.GetConfiguration();
+            options.OAuthClientId(configuration["AuthServer:SwaggerClientId"]);
+            options.OAuthScopes("NaniTrader");
+        });
+
+        app.UseAuditing();
+        app.UseAbpSerilogEnrichers();
+        app.UseConfiguredEndpoints();
+
+        if (app is WebApplication webApp)
+        {
+            webApp.MapFallbackToFile("index.html");
+        }
+    }
 }
