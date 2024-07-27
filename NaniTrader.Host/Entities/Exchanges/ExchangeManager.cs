@@ -6,19 +6,16 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.Guids;
 using Volo.Abp;
-using NaniTrader.Services.Misc.Shared;
 
 namespace NaniTrader.Entities.Exchanges
 {
     public class ExchangeManager : DomainService
     {
         private readonly IExchangeRepository _exchangeRepository;
-        private readonly IUlidGeneratorService _ulidGeneratorService;
 
-        public ExchangeManager(IExchangeRepository exchangeRepository, IUlidGeneratorService ulidGeneratorService)
+        public ExchangeManager(IExchangeRepository exchangeRepository)
         {
             _exchangeRepository = exchangeRepository;
-            _ulidGeneratorService = ulidGeneratorService;
         }
 
         public async Task<Exchange> CreateAsync(string name, string description)
@@ -31,7 +28,7 @@ namespace NaniTrader.Entities.Exchanges
                 throw new ExchangeAlreadyExistsException(name);
             }
 
-            return new Exchange(_ulidGeneratorService.Create(), name, description);
+            return new Exchange(Guid.NewGuid(), name, description);
         }
     }
 }

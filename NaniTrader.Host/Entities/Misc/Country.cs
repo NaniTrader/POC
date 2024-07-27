@@ -4,7 +4,7 @@ using NaniTrader.Entities.Misc.Shared;
 
 namespace NaniTrader.Entities.Misc
 {
-    public class Country : BasicAggregateRoot<Ulid>
+    public class Country : BasicAggregateRoot<Guid>
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
         // here for ef core
@@ -12,7 +12,7 @@ namespace NaniTrader.Entities.Misc
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
         public string Name { get; private set; }
 
-        internal Country(Ulid id, string name) : base(id)
+        internal Country(Guid id, string name) : base(id)
         {
             Name = Check.NotNullOrWhiteSpace(name, nameof(name), CountryConsts.MaxNameLength);
         }

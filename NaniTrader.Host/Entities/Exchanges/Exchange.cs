@@ -13,7 +13,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace NaniTrader.Entities.Exchanges
 {
-    public class Exchange : FullAuditedAggregateRoot<Ulid>
+    public class Exchange : FullAuditedAggregateRoot<Guid>
     {
         // here for ef core
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
@@ -23,7 +23,7 @@ namespace NaniTrader.Entities.Exchanges
         public string Name { get; private set; }
         public string Description { get; private set; }
 
-        internal Exchange(Ulid id, string name, string description) : base (id)
+        internal Exchange(Guid id, string name, string description) : base (id)
         {
             SetName(name);
             SetDescription(description);

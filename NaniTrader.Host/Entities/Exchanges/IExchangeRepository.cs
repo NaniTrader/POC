@@ -7,7 +7,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace NaniTrader.Entities.Exchanges
 {
-    public interface IExchangeRepository : IRepository<Exchange, Ulid>
+    public interface IExchangeRepository : IRepository<Exchange, Guid>
     {
         Task<Exchange?> FindByNameAsync(string name);
 

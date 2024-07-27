@@ -9,12 +9,12 @@ namespace NaniTrader.Services.Exchanges.Shared
 {
     public interface IExchangeAppService : IApplicationService
     {
-        Task<ExchangeDto> GetAsync(Ulid id);
+        Task<ExchangeDto> GetAsync(Guid id);
 
         Task<ExchangeDto> CreateAsync(CreateUpdateExchangeDto input);
 
         Task<PagedResultDto<ExchangeInListDto>> GetPagedListWithNameFilterAsync(ExchangeListFilterDto input);
 
-        Task DeleteAsync(Ulid id);
+        Task DeleteAsync(Guid id);
     }
 }

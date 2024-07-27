@@ -12,7 +12,7 @@ using NaniTrader.Entities.Exchanges;
 namespace NaniTrader.Data.Exchanges
 {
     public class EfCoreExchangeRepository
-    : EfCoreRepository<NaniTraderDbContext, Exchange, Ulid>,
+    : EfCoreRepository<NaniTraderDbContext, Exchange, Guid>,
         IExchangeRepository
     {
         public EfCoreExchangeRepository(IDbContextProvider<NaniTraderDbContext> dbContextProvider)

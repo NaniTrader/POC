@@ -2,7 +2,7 @@
 
 namespace NaniTrader.Entities.Securities
 {
-    public class IndexFutureSecurity : FullAuditedAggregateRoot<Ulid>
+    public class IndexFutureSecurity : FullAuditedAggregateRoot<Guid>
     {
     }
 }
