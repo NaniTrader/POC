@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NaniTrader.Entities.Exchanges;
+using NaniTrader.Entities.MarketData;
 using NaniTrader.Entities.Misc;
+using NaniTrader.Entities.Securities;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
@@ -16,6 +18,13 @@ public class NaniTraderDbContext : AbpDbContext<NaniTraderDbContext>
 {
     public DbSet<Exchange> Exchanges { get; set; }
     public DbSet<Country> Countries { get; set; }
+    public DbSet<MarketDataProvider> MarketDataProviders { get; set; }
+    public DbSet<EquitySecurity> EquitySecurities { get; set; }
+    public DbSet<EquityFutureSecurity> EquityFutureSecurities { get; set; }
+    public DbSet<EquityOptionSecurity> EquityOptionSecurities { get; set; }
+    public DbSet<IndexSecurity> IndexSecurities { get; set; }
+    public DbSet<IndexFutureSecurity> IndexFutureSecurities { get; set; }
+    public DbSet<IndexOptionSecurity> IndexOptionSecurities { get; set; }
 
     public NaniTraderDbContext(DbContextOptions<NaniTraderDbContext> options)
         : base(options)
