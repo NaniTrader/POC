@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using NaniTrader.Entities.Brokers.Shared;
+using NaniTrader.Entities.Securities.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,35 +11,35 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
-namespace NaniTrader.Entities.Brokers
+namespace NaniTrader.Entities.Securities
 {
-    public class Broker : FullAuditedAggregateRoot<Guid>
+    public class SecurityBase : FullAuditedAggregateRoot<Guid>
     {
         // here for ef core
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
-        private Broker() { }
+        private SecurityBase() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
         public string Name { get; private set; }
         public string Description { get; private set; }
 
-        internal Broker(Guid id, string name, string description) : base (id)
+        internal SecurityBase(Guid id, string name, string description) : base(id)
         {
             SetName(name);
             SetDescription(description);
         }
 
         [MemberNotNull(nameof(Name))]
-        public Broker SetName(string name)
+        public SecurityBase SetName(string name)
         {
-            Name = Check.NotNullOrWhiteSpace(name, nameof(name), BrokerConsts.MaxNameLength, BrokerConsts.MinNameLength);
+            Name = Check.NotNullOrWhiteSpace(name, nameof(name), SecurityConsts.MaxNameLength, SecurityConsts.MinNameLength);
             return this;
         }
 
         [MemberNotNull(nameof(Description))]
-        public Broker SetDescription(string description)
+        public SecurityBase SetDescription(string description)
         {
-            Description = Check.NotNullOrWhiteSpace(description, nameof(description), BrokerConsts.MaxDescriptionLength, BrokerConsts.MinDescriptionLength);
+            Description = Check.NotNullOrWhiteSpace(description, nameof(description), SecurityConsts.MaxDescriptionLength, SecurityConsts.MinDescriptionLength);
             return this;
         }
     }

@@ -2,7 +2,11 @@
 
 namespace NaniTrader.Entities.Securities
 {
-    public class EquitySecurity : FullAuditedAggregateRoot<Guid>
+    public class EquitySecurity : SecurityBase
     {
+        internal EquitySecurity(Guid id, string name, string description)
+            : base(id, name, description)
+        {
+        }
     }
 }

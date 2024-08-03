@@ -2,7 +2,11 @@
 
 namespace NaniTrader.Entities.Securities
 {
-    public class IndexOptionSecurity : FullAuditedAggregateRoot<Guid>
+    public class IndexOptionSecurity : SecurityBase
     {
+        internal IndexOptionSecurity(Guid id, string name, string description)
+            : base(id, name, description)
+        {
+        }
     }
 }
