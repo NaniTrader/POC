@@ -17,16 +17,18 @@ namespace NaniTrader.Entities.Securities
     {
         // here for ef core
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
-        private SecurityBase() { }
+        protected SecurityBase() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
         public string Name { get; private set; }
         public string Description { get; private set; }
+        public Guid ParentId { get; private set; }
 
-        internal SecurityBase(Guid id, string name, string description) : base(id)
+        internal SecurityBase(Guid id, Guid parentId, string name, string description) : base(id)
         {
             SetName(name);
             SetDescription(description);
+            SetParentId(parentId);
         }
 
         [MemberNotNull(nameof(Name))]
@@ -40,6 +42,13 @@ namespace NaniTrader.Entities.Securities
         public SecurityBase SetDescription(string description)
         {
             Description = Check.NotNullOrWhiteSpace(description, nameof(description), SecurityConsts.MaxDescriptionLength, SecurityConsts.MinDescriptionLength);
+            return this;
+        }
+
+        [MemberNotNull(nameof(ParentId))]
+        public SecurityBase SetParentId(Guid parentId)
+        {
+            ParentId = Check.NotDefaultOrNull<Guid>(parentId, nameof(parentId));
             return this;
         }
     }

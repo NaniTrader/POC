@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NaniTrader.Entities.MarketDataProviders.Shared
+namespace NaniTrader.Entities.MarketData.Shared
 {
     public static class MarketDataProviderConsts
     {

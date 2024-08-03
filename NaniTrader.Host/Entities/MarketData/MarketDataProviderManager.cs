@@ -7,7 +7,7 @@ using Volo.Abp.Domain.Services;
 using Volo.Abp.Guids;
 using Volo.Abp;
 
-namespace NaniTrader.Entities.MarketDataProviders
+namespace NaniTrader.Entities.MarketData
 {
     public class MarketDataProviderManager : DomainService
     {

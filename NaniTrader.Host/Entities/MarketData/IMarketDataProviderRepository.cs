@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
-namespace NaniTrader.Entities.MarketDataProviders
+namespace NaniTrader.Entities.MarketData
 {
     public interface IMarketDataProviderRepository : IRepository<MarketDataProvider, Guid>
     {

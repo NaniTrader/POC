@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using NaniTrader.Entities.MarketDataProviders.Shared;
+using NaniTrader.Entities.MarketData.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
-namespace NaniTrader.Entities.MarketDataProviders
+namespace NaniTrader.Entities.MarketData
 {
     public class MarketDataProvider : FullAuditedAggregateRoot<Guid>
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NaniTrader.Entities.Shared;
 using Volo.Abp;
 
-namespace NaniTrader.Entities.MarketDataProviders
+namespace NaniTrader.Entities.MarketData
 {
     public class MarketDataProviderAlreadyExistsException : BusinessException
     {
