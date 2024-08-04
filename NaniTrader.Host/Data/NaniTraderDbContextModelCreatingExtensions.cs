@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NaniTrader.Entities;
 using NaniTrader.Entities.Exchanges;
-using NaniTrader.Entities.Exchanges.Shared;
 using NaniTrader.Entities.Misc;
-using NaniTrader.Entities.Misc.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;

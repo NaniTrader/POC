@@ -1,6 +1,5 @@
 ﻿using Volo.Abp.Domain.Entities;
 using Volo.Abp;
-using NaniTrader.Entities.Misc.Shared;
 
 namespace NaniTrader.Entities.Misc
 {

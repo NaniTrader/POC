@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaniTrader.Host", "NaniTrader.Host\NaniTrader.Host.csproj", "{D427F620-3BA3-4991-9056-2B81007D9DF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NaniTrader.Host", "NaniTrader.Host\NaniTrader.Host.csproj", "{D427F620-3BA3-4991-9056-2B81007D9DF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaniTrader.Blazor", "NaniTrader.Blazor\NaniTrader.Blazor.csproj", "{C055F3CC-DA66-4273-8083-B2FB7C05A19F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NaniTrader.Blazor", "NaniTrader.Blazor\NaniTrader.Blazor.csproj", "{C055F3CC-DA66-4273-8083-B2FB7C05A19F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaniTrader.Contracts", "NaniTrader.Contracts\NaniTrader.Contracts.csproj", "{430B37D2-9008-4704-8FC7-77A2DF3F3587}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NaniTrader.Contracts", "NaniTrader.Contracts\NaniTrader.Contracts.csproj", "{430B37D2-9008-4704-8FC7-77A2DF3F3587}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

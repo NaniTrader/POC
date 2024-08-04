@@ -1,5 +1,6 @@
-﻿using NaniTrader.Entities.Exchanges;
-using NaniTrader.Services.Exchanges.Shared;
+﻿using Microsoft.AspNetCore.Authorization;
+using NaniTrader.Entities.Exchanges;
+using NaniTrader.Services.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace NaniTrader.Services.Exchanges
 {
+    [Authorize(NaniTraderPermissions.Exchanges.Default)]
     public class ExchangeAppService : NaniTraderAppService, IExchangeAppService
     {
         private readonly IExchangeRepository _exchangeRepository;
@@ -54,6 +56,7 @@ namespace NaniTrader.Services.Exchanges
             );
         }
 
+        [Authorize(NaniTraderPermissions.Exchanges.Create)]
         public async Task<ExchangeDto> CreateAsync(CreateUpdateExchangeDto input)
         {
             var exchange = await _exchangeManager.CreateAsync(
@@ -66,6 +69,7 @@ namespace NaniTrader.Services.Exchanges
             return ObjectMapper.Map<Exchange, ExchangeDto>(exchange);
         }
 
+        [Authorize(NaniTraderPermissions.Exchanges.Delete)]
         public async Task DeleteAsync(Guid id)
         {
             await _exchangeRepository.DeleteAsync(id);

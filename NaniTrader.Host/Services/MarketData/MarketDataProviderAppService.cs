@@ -1,5 +1,6 @@
-﻿using NaniTrader.Entities.MarketData;
-using NaniTrader.Services.MarketData.Shared;
+﻿using Microsoft.AspNetCore.Authorization;
+using NaniTrader.Entities.MarketData;
+using NaniTrader.Services.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace NaniTrader.Services.MarketData
 {
+    [Authorize(NaniTraderPermissions.MarketDataProviders.Default)]
     public class MarketDataProviderAppService : NaniTraderAppService, IMarketDataProviderAppService
     {
         private readonly IMarketDataProviderRepository _marketDataProviderRepository;
@@ -54,6 +56,7 @@ namespace NaniTrader.Services.MarketData
             );
         }
 
+        [Authorize(NaniTraderPermissions.MarketDataProviders.Create)]
         public async Task<MarketDataProviderDto> CreateAsync(CreateUpdateMarketDataProviderDto input)
         {
             var marketDataProvider = await _marketDataProviderManager.CreateAsync(
@@ -66,6 +69,7 @@ namespace NaniTrader.Services.MarketData
             return ObjectMapper.Map<MarketDataProvider, MarketDataProviderDto>(marketDataProvider);
         }
 
+        [Authorize(NaniTraderPermissions.MarketDataProviders.Delete)]
         public async Task DeleteAsync(Guid id)
         {
             await _marketDataProviderRepository.DeleteAsync(id);

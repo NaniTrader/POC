@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using NaniTrader.Entities.Exchanges;
-using NaniTrader.Services.Exchanges.Shared;
+using NaniTrader.Services.Exchanges;
 
 namespace NaniTrader.ObjectMapping;
 

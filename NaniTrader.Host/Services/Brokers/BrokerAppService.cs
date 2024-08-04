@@ -1,5 +1,6 @@
-﻿using NaniTrader.Entities.Brokers;
-using NaniTrader.Services.Brokers.Shared;
+﻿using Microsoft.AspNetCore.Authorization;
+using NaniTrader.Entities.Brokers;
+using NaniTrader.Services.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace NaniTrader.Services.Brokers
 {
+    [Authorize(NaniTraderPermissions.Brokers.Default)]
     public class BrokerAppService : NaniTraderAppService, IBrokerAppService
     {
         private readonly IBrokerRepository _brokerRepository;
@@ -54,6 +56,7 @@ namespace NaniTrader.Services.Brokers
             );
         }
 
+        [Authorize(NaniTraderPermissions.Brokers.Create)]
         public async Task<BrokerDto> CreateAsync(CreateUpdateBrokerDto input)
         {
             var broker = await _brokerManager.CreateAsync(
@@ -66,6 +69,7 @@ namespace NaniTrader.Services.Brokers
             return ObjectMapper.Map<Broker, BrokerDto>(broker);
         }
 
+        [Authorize(NaniTraderPermissions.Brokers.Delete)]
         public async Task DeleteAsync(Guid id)
         {
             await _brokerRepository.DeleteAsync(id);

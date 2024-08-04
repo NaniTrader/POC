@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using NaniTrader.Entities.Brokers.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

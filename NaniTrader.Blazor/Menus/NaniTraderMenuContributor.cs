@@ -60,6 +60,16 @@ public class NaniTraderMenuContributor : IMenuContributor
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
 
+        context.Menu.AddItem(
+            new ApplicationMenuItem(
+                "Exchanges",
+                l["Menu:Exchanges"],
+                icon: "fa fa-book").AddItem(
+                new ApplicationMenuItem(
+                    "Exchanges.ListView",
+                    l["Menu:Exchanges.ListView"],
+                    url: "/exchanges")));
+
         return Task.CompletedTask;
     }
 
