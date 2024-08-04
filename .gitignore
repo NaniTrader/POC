@@ -253,7 +253,7 @@ paket-files/
 
 
 # NaniTrader
-NaniTrader/Logs/*
+/NaniTrader.Host/Logs/*
 
 *.db
 *.db-shm
