@@ -23,12 +23,17 @@ namespace NaniTrader.Services.Permissions
             var brokersPermission = naniTraderGroup.AddPermission(NaniTraderPermissions.Brokers.Default, L("Permission:Brokers"));
             brokersPermission.AddChild(NaniTraderPermissions.Brokers.Create, L("Permission:Brokers.Create"));
             brokersPermission.AddChild(NaniTraderPermissions.Brokers.Edit, L("Permission:Brokers.Edit"));
-            brokersPermission.AddChild(NaniTraderPermissions.Exchanges.Delete, L("Permission:Brokers.Delete"));
+            brokersPermission.AddChild(NaniTraderPermissions.Brokers.Delete, L("Permission:Brokers.Delete"));
 
             var marketDataProvidersPermission = naniTraderGroup.AddPermission(NaniTraderPermissions.MarketDataProviders.Default, L("Permission:MarketDataProviders"));
             marketDataProvidersPermission.AddChild(NaniTraderPermissions.MarketDataProviders.Create, L("Permission:MarketDataProviders.Create"));
             marketDataProvidersPermission.AddChild(NaniTraderPermissions.MarketDataProviders.Edit, L("Permission:MarketDataProviders.Edit"));
             marketDataProvidersPermission.AddChild(NaniTraderPermissions.MarketDataProviders.Delete, L("Permission:MarketDataProviders.Delete"));
+
+            var securitiesPermission = naniTraderGroup.AddPermission(NaniTraderPermissions.Securities.Default, L("Permission:Securities"));
+            securitiesPermission.AddChild(NaniTraderPermissions.Securities.Create, L("Permission:Securities.Create"));
+            securitiesPermission.AddChild(NaniTraderPermissions.Securities.Edit, L("Permission:Securities.Edit"));
+            securitiesPermission.AddChild(NaniTraderPermissions.Securities.Delete, L("Permission:Securities.Delete"));
         }
 
         private static LocalizableString L(string name)

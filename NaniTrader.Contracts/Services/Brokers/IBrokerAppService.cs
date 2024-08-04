@@ -13,6 +13,8 @@ namespace NaniTrader.Services.Brokers
 
         Task<BrokerDto> CreateAsync(CreateUpdateBrokerDto input);
 
+        Task UpdateAsync(Guid id, CreateUpdateBrokerDto input);
+
         Task<PagedResultDto<BrokerInListDto>> GetPagedListWithNameFilterAsync(BrokerListFilterDto input);
 
         Task DeleteAsync(Guid id);

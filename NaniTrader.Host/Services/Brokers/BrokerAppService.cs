@@ -69,6 +69,19 @@ namespace NaniTrader.Services.Brokers
             return ObjectMapper.Map<Broker, BrokerDto>(broker);
         }
 
+        [Authorize(NaniTraderPermissions.Brokers.Edit)]
+        public async Task UpdateAsync(Guid id, CreateUpdateBrokerDto input)
+        {
+            var broker = await _brokerRepository.GetAsync(id);
+
+            if (broker.Name != input.Name)
+            {
+                await _brokerManager.UpdateNameAsync(broker, input.Name);
+            }
+
+            await _brokerRepository.UpdateAsync(broker);
+        }
+
         [Authorize(NaniTraderPermissions.Brokers.Delete)]
         public async Task DeleteAsync(Guid id)
         {

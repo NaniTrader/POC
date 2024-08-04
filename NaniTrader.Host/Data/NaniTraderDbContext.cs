@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NaniTrader.Entities.Brokers;
 using NaniTrader.Entities.Exchanges;
 using NaniTrader.Entities.MarketData;
 using NaniTrader.Entities.Misc;
@@ -18,6 +19,7 @@ public class NaniTraderDbContext : AbpDbContext<NaniTraderDbContext>
 {
     public DbSet<Exchange> Exchanges { get; set; }
     public DbSet<Country> Countries { get; set; }
+    public DbSet<Broker> Brokers { get; set; }
     public DbSet<MarketDataProvider> MarketDataProviders { get; set; }
     public DbSet<EquitySecurity> EquitySecurities { get; set; }
     public DbSet<EquityFutureSecurity> EquityFutureSecurities { get; set; }

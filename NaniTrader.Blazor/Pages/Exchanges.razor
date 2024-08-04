@@ -1,6 +1,8 @@
 ﻿@page "/exchanges"
+@attribute [Authorize(NaniTraderPermissions.Exchanges.Default)]
+@using NaniTrader.Services.Permissions
 
-<h2>Books</h2>
+<h2>Exchanges List</h2>
 
 @code {
 

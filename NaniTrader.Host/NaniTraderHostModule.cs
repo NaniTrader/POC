@@ -324,10 +324,12 @@ public class NaniTraderHostModule : AbpModule
         app.UseAuthentication();
         app.UseAbpOpenIddictValidation();
 
-        if (MultiTenancyConsts.IsEnabled)
-        {
-            app.UseMultiTenancy();
-        }
+
+        // NOTE: Enable if multitenancy desired
+        //if (MultiTenancyConsts.IsEnabled)
+        //{
+        //    app.UseMultiTenancy();
+        //}
 
         app.UseUnitOfWork();
         app.UseDynamicClaims();

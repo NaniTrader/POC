@@ -1,6 +1,7 @@
 ﻿using NaniTrader.Blazor.Menus;
 using NaniTrader.Localization;
 using NaniTrader.MultiTenancy;
+using NaniTrader.Services.Permissions;
 using Volo.Abp.Account.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Identity.Blazor;
@@ -31,7 +32,7 @@ public class NaniTraderMenuContributor : IMenuContributor
         }
     }
 
-    private Task ConfigureMainMenuAsync(MenuConfigurationContext context)
+    private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
         var l = context.GetLocalizer<NaniTraderResource>();
 
@@ -48,19 +49,24 @@ public class NaniTraderMenuContributor : IMenuContributor
 
         var administration = context.Menu.GetAdministration();
 
-        if (MultiTenancyConsts.IsEnabled)
-        {
-            administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
-        }
-        else
-        {
-            administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
-        }
+        // NOTE: Enable if multitenancy desired
+        //if (MultiTenancyConsts.IsEnabled)
+        //{
+        //    administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
+        //}
+        //else
+        //{
+        //    administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
+        //}
+
+        administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
 
-        context.Menu.AddItem(
+        if (await context.IsGrantedAsync(NaniTraderPermissions.Exchanges.Default))
+        {
+            context.Menu.AddItem(
             new ApplicationMenuItem(
                 "Exchanges",
                 l["Menu:Exchanges"],
@@ -69,8 +75,85 @@ public class NaniTraderMenuContributor : IMenuContributor
                     "Exchanges.ListView",
                     l["Menu:Exchanges.ListView"],
                     url: "/exchanges")));
+        }
 
-        return Task.CompletedTask;
+        if (await context.IsGrantedAsync(NaniTraderPermissions.Brokers.Default))
+        {
+            context.Menu.AddItem(
+            new ApplicationMenuItem(
+                "Brokers",
+                l["Menu:Brokers"],
+                icon: "fa fa-book").AddItem(
+                new ApplicationMenuItem(
+                    "Brokers.ListView",
+                    l["Menu:Brokers.ListView"],
+                    url: "/brokers")));
+        }
+
+        if (await context.IsGrantedAsync(NaniTraderPermissions.MarketDataProviders.Default))
+        {
+            context.Menu.AddItem(
+            new ApplicationMenuItem(
+                "MarketDataProviders",
+                l["Menu:MarketDataProviders"],
+                icon: "fa fa-book").AddItem(
+                new ApplicationMenuItem(
+                    "MarketDataProviders.ListView",
+                    l["Menu:MarketDataProviders.ListView"],
+                    url: "/market-data-providers")));
+        }
+
+        if (await context.IsGrantedAsync(NaniTraderPermissions.Securities.Default))
+        {
+            var securitiesMenuItem = new ApplicationMenuItem(
+                "Securities",
+                l["Menu:Securities"],
+                icon: "fa fa-book");
+
+            var equitySecuritiesMenuItem = new ApplicationMenuItem(
+                    "EquitySecurities.ListView",
+                    l["Menu:EquitySecurities.ListView"],
+                    url: "/equity-securities");
+
+            securitiesMenuItem.AddItem(equitySecuritiesMenuItem);
+
+            var equityFutureSecuritiesMenuItem = new ApplicationMenuItem(
+                    "EquityFutureSecurities.ListView",
+                    l["Menu:EquityFutureSecurities.ListView"],
+                    url: "/equity-future-securities");
+
+            securitiesMenuItem.AddItem(equityFutureSecuritiesMenuItem);
+
+            var equityOptionSecuritiesMenuItem = new ApplicationMenuItem(
+                    "EquityOptionSecurities.ListView",
+                    l["Menu:EquityOptionSecurities.ListView"],
+                    url: "/equity-option-securities");
+
+            securitiesMenuItem.AddItem(equityOptionSecuritiesMenuItem);
+
+            var indexSecuritiesMenuItem = new ApplicationMenuItem(
+                    "IndexSecurities.ListView",
+                    l["Menu:IndexSecurities.ListView"],
+                    url: "/index-securities");
+
+            securitiesMenuItem.AddItem(indexSecuritiesMenuItem);
+
+            var indexFutureSecuritiesMenuItem = new ApplicationMenuItem(
+                    "IndexFutureSecurities.ListView",
+                    l["Menu:IndexFutureSecurities.ListView"],
+                    url: "/index-future-securities");
+
+            securitiesMenuItem.AddItem(indexFutureSecuritiesMenuItem);
+
+            var indexOptionSecuritiesMenuItem = new ApplicationMenuItem(
+                    "IndexOptionSecurities.ListView",
+                    l["Menu:IndexOptionSecurities.ListView"],
+                    url: "/index-option-securities");
+
+            securitiesMenuItem.AddItem(indexOptionSecuritiesMenuItem);
+
+            context.Menu.AddItem(securitiesMenuItem);
+        }
     }
 
     private Task ConfigureUserMenuAsync(MenuConfigurationContext context)

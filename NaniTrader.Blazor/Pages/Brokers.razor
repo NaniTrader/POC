@@ -1,0 +1,167 @@
+﻿@page "/brokers"
+@attribute [Authorize(NaniTraderPermissions.Brokers.Default)]
+@inherits NaniTraderComponentBase
+@inject IBrokerAppService BrokerAppService
+@inject AbpBlazorMessageLocalizerHelper<NaniTraderResource> LH
+@using NaniTrader.Services.Permissions
+@using NaniTrader.Services.Brokers
+@using NaniTrader.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h2>@L["Brokers"]</h2>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                    @if (CanCreateBroker)
+                    {
+                        <Button Color="Color.Primary"
+                                Clicked="OpenCreateBrokerModal">
+                            @L["NewBroker"]
+                        </Button>
+                    }
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="BrokerInListDto"
+                  Data="BrokerList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize">
+            <DataGridColumns>
+                <DataGridColumn Width="150px"
+                                TItem="BrokerDto"
+                                Field="@nameof(BrokerDto.Id)"
+                                Sortable="false"
+                                Caption="@L["Actions"]">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @if (CanEditBroker)
+                                {
+                                    <DropdownItem Clicked="() => OpenEditBrokerModal(context)">
+                                        @L["Edit"]
+                                    </DropdownItem>
+                                }
+                                @if (CanDeleteBroker)
+                                {
+                                    <DropdownItem Clicked="() => DeleteBrokerAsync(context)">
+                                        @L["Delete"]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="BrokerDto"
+                                Field="@nameof(BrokerDto.Name)"
+                                Caption="@L["Name"]"></DataGridColumn>
+                <DataGridColumn TItem="BrokerDto"
+                                Field="@nameof(BrokerDto.Description)"
+                                Caption="@L["Description"]">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+<Modal @ref="CreateBrokerModal">
+    <ModalContent IsCentered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@L["NewBroker"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateBrokerModal" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@CreateValidationsRef" Model="@NewBroker" ValidateOnLoad="false">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Name"]</FieldLabel>
+                            <TextEdit @bind-Text="@NewBroker.Name">
+                                <Feedback>
+                                    <ValidationError/>
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Description"]</FieldLabel>
+                            <TextEdit @bind-Text="@NewBroker.Description">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateBrokerModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="CreateBrokerAsync">
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="EditBrokerModal">
+    <ModalContent IsCentered="true">
+        <Form>
+            <ModalHeader>
+                        <ModalTitle>@EditingBroker.Name</ModalTitle>
+                        <CloseButton Clicked="CloseEditBrokerModal" />
+                    </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@EditValidationsRef" Model="@EditingBroker" ValidateOnLoad="false">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Name"]</FieldLabel>
+                            <TextEdit @bind-Text="@EditingBroker.Name">
+                                <Feedback>
+                                    <ValidationError/>
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Description"]</FieldLabel>
+                            <TextEdit @bind-Text="@EditingBroker.Description">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseEditBrokerModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="UpdateBrokerAsync">
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
