@@ -14,16 +14,9 @@ namespace NaniTrader.Entities.Securities
         internal IndexFutureSecurity(Guid id, Guid parentId, IndexSecurity underlying, string name, string description)
             : base(id, parentId, name, description)
         {
-            SetUnderlying(underlying);
+            Underlying = underlying;
         }
 
-        [MemberNotNull(nameof(Underlying))]
-        public IndexFutureSecurity SetUnderlying(IndexSecurity underlying)
-        {
-            Underlying = Check.NotNull(underlying, nameof(underlying));
-            return this;
-        }
-
-        public IndexSecurity Underlying { get; private set; }
+        public IndexSecurity Underlying { get; internal set; }
     }
 }

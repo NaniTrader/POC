@@ -12,18 +12,11 @@ namespace NaniTrader.Entities.Securities
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
         internal EquityOptionSecurity(Guid id, Guid parentId, EquitySecurity underlying, string name, string description)
-            : base(id, parentId, name, description)
+             : base(id, parentId, name, description)
         {
-            SetUnderlying(underlying);
+            Underlying = underlying;
         }
 
-        [MemberNotNull(nameof(Underlying))]
-        public EquityOptionSecurity SetUnderlying(EquitySecurity underlying)
-        {
-            Underlying = Check.NotNull(underlying, nameof(underlying));
-            return this;
-        }
-
-        public EquitySecurity Underlying { get; private set; }
+        public EquitySecurity Underlying { get; internal set; }
     }
 }

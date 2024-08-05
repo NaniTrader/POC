@@ -14,16 +14,9 @@ namespace NaniTrader.Entities.Securities
         internal EquityFutureSecurity(Guid id, Guid parentId, EquitySecurity underlying, string name, string description)
             : base(id, parentId, name, description)
         {
-            SetUnderlying(underlying);
+            Underlying = underlying;
         }
 
-        [MemberNotNull(nameof(Underlying))]
-        public EquityFutureSecurity SetUnderlying(EquitySecurity underlying)
-        {
-            Underlying = Check.NotNull(underlying, nameof(underlying));
-            return this;
-        }
-
-        public EquitySecurity Underlying { get; private set; }
+        public EquitySecurity Underlying { get; internal set; }
     }
 }
