@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using NaniTrader.Entities.Exchanges;
 using NaniTrader.Entities.MarketData;
+using NaniTrader.Services.Exchanges;
 using NaniTrader.Services.Permissions;
 using System;
 using System.Collections.Generic;
@@ -67,6 +69,19 @@ namespace NaniTrader.Services.MarketData
             await _marketDataProviderRepository.InsertAsync(marketDataProvider);
 
             return ObjectMapper.Map<MarketDataProvider, MarketDataProviderDto>(marketDataProvider);
+        }
+
+        [Authorize(NaniTraderPermissions.MarketDataProviders.Edit)]
+        public async Task UpdateAsync(Guid id, CreateUpdateMarketDataProviderDto input)
+        {
+            var broker = await _marketDataProviderRepository.GetAsync(id);
+
+            if (broker.Name != input.Name)
+            {
+                await _marketDataProviderManager.UpdateNameAsync(broker, input.Name);
+            }
+
+            await _marketDataProviderRepository.UpdateAsync(broker);
         }
 
         [Authorize(NaniTraderPermissions.MarketDataProviders.Delete)]

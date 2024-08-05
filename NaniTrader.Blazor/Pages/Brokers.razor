@@ -34,8 +34,8 @@
                   PageSize="PageSize">
             <DataGridColumns>
                 <DataGridColumn Width="150px"
-                                TItem="BrokerDto"
-                                Field="@nameof(BrokerDto.Id)"
+                                TItem="BrokerInListDto"
+                                Field="@nameof(BrokerInListDto.Id)"
                                 Sortable="false"
                                 Caption="@L["Actions"]">
                     <DisplayTemplate>
@@ -60,11 +60,11 @@
                         </Dropdown>
                     </DisplayTemplate>
                 </DataGridColumn>
-                <DataGridColumn TItem="BrokerDto"
-                                Field="@nameof(BrokerDto.Name)"
+                <DataGridColumn TItem="BrokerInListDto"
+                                Field="@nameof(BrokerInListDto.Name)"
                                 Caption="@L["Name"]"></DataGridColumn>
-                <DataGridColumn TItem="BrokerDto"
-                                Field="@nameof(BrokerDto.Description)"
+                <DataGridColumn TItem="BrokerInListDto"
+                                Field="@nameof(BrokerInListDto.Description)"
                                 Caption="@L["Description"]">
                 </DataGridColumn>
             </DataGridColumns>
@@ -73,6 +73,7 @@
 </Card>
 
 <Modal @ref="CreateBrokerModal">
+    @* <ModalBackdrop /> TODO: check sample code*@
     <ModalContent IsCentered="true">
         <Form>
             <ModalHeader>
@@ -120,6 +121,7 @@
 </Modal>
 
 <Modal @ref="EditBrokerModal">
+    @* <ModalBackdrop /> TODO: check sample code*@
     <ModalContent IsCentered="true">
         <Form>
             <ModalHeader>

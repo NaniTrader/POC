@@ -19,27 +19,13 @@ namespace NaniTrader.Entities.MarketData
         private MarketDataProvider() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
-        public string Name { get; private set; }
-        public string Description { get; private set; }
+        public string Name { get; internal set; }
+        public string Description { get; internal set; }
 
         internal MarketDataProvider(Guid id, string name, string description) : base (id)
         {
-            SetName(name);
-            SetDescription(description);
-        }
-
-        [MemberNotNull(nameof(Name))]
-        public MarketDataProvider SetName(string name)
-        {
-            Name = Check.NotNullOrWhiteSpace(name, nameof(name), MarketDataProviderConsts.MaxNameLength, MarketDataProviderConsts.MinNameLength);
-            return this;
-        }
-
-        [MemberNotNull(nameof(Description))]
-        public MarketDataProvider SetDescription(string description)
-        {
-            Description = Check.NotNullOrWhiteSpace(description, nameof(description), MarketDataProviderConsts.MaxDescriptionLength, MarketDataProviderConsts.MinDescriptionLength);
-            return this;
+            Name = name;
+            Description = description;
         }
     }
 }

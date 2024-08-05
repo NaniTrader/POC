@@ -19,27 +19,13 @@ namespace NaniTrader.Entities.Exchanges
         private Exchange() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
-        public string Name { get; private set; }
-        public string Description { get; private set; }
+        public string Name { get; internal set; }
+        public string Description { get; internal set; }
 
         internal Exchange(Guid id, string name, string description) : base (id)
         {
-            SetName(name);
-            SetDescription(description);
-        }
-
-        [MemberNotNull(nameof(Name))]
-        public Exchange SetName(string name)
-        {
-            Name = Check.NotNullOrWhiteSpace(name, nameof(name), ExchangeConsts.MaxNameLength, ExchangeConsts.MinNameLength);
-            return this;
-        }
-
-        [MemberNotNull(nameof(Description))]
-        public Exchange SetDescription(string description)
-        {
-            Description = Check.NotNullOrWhiteSpace(description, nameof(description), ExchangeConsts.MaxDescriptionLength, ExchangeConsts.MinDescriptionLength);
-            return this;
+            Name = name;
+            Description = description;
         }
     }
 }

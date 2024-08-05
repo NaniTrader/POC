@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NaniTrader.Services.Brokers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace NaniTrader.Services.MarketData
         Task<MarketDataProviderDto> GetAsync(Guid id);
 
         Task<MarketDataProviderDto> CreateAsync(CreateUpdateMarketDataProviderDto input);
+
+        Task UpdateAsync(Guid id, CreateUpdateMarketDataProviderDto input);
 
         Task<PagedResultDto<MarketDataProviderInListDto>> GetPagedListWithNameFilterAsync(MarketDataProviderListFilterDto input);
 

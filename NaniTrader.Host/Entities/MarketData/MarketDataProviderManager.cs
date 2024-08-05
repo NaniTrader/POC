@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.Guids;
 using Volo.Abp;
+using NaniTrader.Entities.Brokers;
+using NaniTrader.Entities.Exchanges;
 
 namespace NaniTrader.Entities.MarketData
 {
@@ -29,6 +31,20 @@ namespace NaniTrader.Entities.MarketData
             }
 
             return new MarketDataProvider(Guid.NewGuid(), name, description);
+        }
+
+        public async Task UpdateNameAsync(MarketDataProvider marketDataProvider, string newName)
+        {
+            Check.NotNull(marketDataProvider, nameof(marketDataProvider));
+            Check.NotNullOrWhiteSpace(newName, nameof(newName), MarketDataProviderConsts.MaxNameLength, MarketDataProviderConsts.MinNameLength);
+
+            var existingMarketDataProvider = await _marketDataProviderRepository.FindByNameAsync(newName);
+            if (existingMarketDataProvider != null)
+            {
+                throw new MarketDataProviderAlreadyExistsException(newName);
+            }
+
+            marketDataProvider.Name = newName;
         }
     }
 }

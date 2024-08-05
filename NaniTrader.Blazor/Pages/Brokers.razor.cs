@@ -91,37 +91,6 @@ namespace NaniTrader.Pages
             await (CreateBrokerModal?.Show() ?? Task.CompletedTask);
         }
 
-        private async void CloseCreateBrokerModal()
-        {
-            await (CreateBrokerModal?.Hide() ?? Task.CompletedTask);
-        }
-
-        private async void OpenEditBrokerModal(BrokerDto Broker)
-        {
-            await (EditValidationsRef?.ClearAll() ?? Task.CompletedTask);
-
-            EditingBrokerId = Broker.Id;
-            EditingBroker = ObjectMapper.Map<BrokerDto, CreateUpdateBrokerDto>(Broker);
-            await (EditBrokerModal?.Hide() ?? Task.CompletedTask);
-        }
-
-        private async Task DeleteBrokerAsync(BrokerDto Broker)
-        {
-            var confirmMessage = L["BrokerDeletionConfirmationMessage", Broker.Name];
-            if (!await Message.Confirm(confirmMessage))
-            {
-                return;
-            }
-
-            await BrokerAppService.DeleteAsync(Broker.Id);
-            await GetBrokersAsync();
-        }
-
-        private async void CloseEditBrokerModal()
-        {
-            await (EditBrokerModal?.Hide() ?? Task.CompletedTask);
-        }
-
         private async Task CreateBrokerAsync()
         {
             var validationResult = await (CreateValidationsRef?.ValidateAll() ?? Task.FromResult(false));
@@ -133,6 +102,21 @@ namespace NaniTrader.Pages
             }
         }
 
+        private async void CloseCreateBrokerModal()
+        {
+            await (CreateBrokerModal?.Hide() ?? Task.CompletedTask);
+        }
+
+        private async void OpenEditBrokerModal(BrokerInListDto brokerInList)
+        {
+            await (EditValidationsRef?.ClearAll() ?? Task.CompletedTask);
+
+            EditingBrokerId = brokerInList.Id;
+            BrokerDto Broker = await BrokerAppService.GetAsync(EditingBrokerId);
+            EditingBroker = ObjectMapper.Map<BrokerDto, CreateUpdateBrokerDto>(Broker);
+            await (EditBrokerModal?.Show() ?? Task.CompletedTask);
+        }
+
         private async Task UpdateBrokerAsync()
         {
             var validationResult = await (EditValidationsRef?.ValidateAll() ?? Task.FromResult(false));
@@ -142,6 +126,23 @@ namespace NaniTrader.Pages
                 await GetBrokersAsync();
                 await (EditBrokerModal?.Hide() ?? Task.CompletedTask);
             }
+        }
+
+        private async void CloseEditBrokerModal()
+        {
+            await (EditBrokerModal?.Hide() ?? Task.CompletedTask);
+        }
+
+        private async Task DeleteBrokerAsync(BrokerInListDto brokerInList)
+        {
+            var confirmMessage = L["BrokerDeletionConfirmationMessage", brokerInList.Name];
+            if (!await Message.Confirm(confirmMessage))
+            {
+                return;
+            }
+
+            await BrokerAppService.DeleteAsync(brokerInList.Id);
+            await GetBrokersAsync();
         }
     }
 }

@@ -5,10 +5,10 @@ using Volo.Abp.Application.Dtos;
 
 namespace NaniTrader.Services.MarketData
 {
-    public class MarketDataProviderDto : AuditedEntityDto<int>
+    public class MarketDataProviderDto : AuditedEntityDto<Guid>
     {
-        public string? Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string? Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }

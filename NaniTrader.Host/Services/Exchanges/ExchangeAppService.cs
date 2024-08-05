@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using NaniTrader.Entities.Brokers;
 using NaniTrader.Entities.Exchanges;
+using NaniTrader.Services.Brokers;
 using NaniTrader.Services.Permissions;
 using System;
 using System.Collections.Generic;
@@ -67,6 +69,19 @@ namespace NaniTrader.Services.Exchanges
             await _exchangeRepository.InsertAsync(exchange);
 
             return ObjectMapper.Map<Exchange, ExchangeDto>(exchange);
+        }
+
+        [Authorize(NaniTraderPermissions.Exchanges.Edit)]
+        public async Task UpdateAsync(Guid id, CreateUpdateExchangeDto input)
+        {
+            var broker = await _exchangeRepository.GetAsync(id);
+
+            if (broker.Name != input.Name)
+            {
+                await _exchangeManager.UpdateNameAsync(broker, input.Name);
+            }
+
+            await _exchangeRepository.UpdateAsync(broker);
         }
 
         [Authorize(NaniTraderPermissions.Exchanges.Delete)]

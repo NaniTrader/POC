@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.Guids;
 using Volo.Abp;
+using NaniTrader.Entities.Brokers;
 
 namespace NaniTrader.Entities.Exchanges
 {
@@ -20,7 +21,8 @@ namespace NaniTrader.Entities.Exchanges
 
         public async Task<Exchange> CreateAsync(string name, string description)
         {
-            Check.NotNullOrWhiteSpace(name, nameof(name));
+            Check.NotNullOrWhiteSpace(name, nameof(name), ExchangeConsts.MaxNameLength, ExchangeConsts.MinNameLength);
+            Check.NotNullOrWhiteSpace(description, nameof(description), ExchangeConsts.MaxDescriptionLength, ExchangeConsts.MinDescriptionLength);
 
             var existingExchange = await _exchangeRepository.FindByNameAsync(name);
             if (existingExchange != null)
@@ -29,6 +31,20 @@ namespace NaniTrader.Entities.Exchanges
             }
 
             return new Exchange(Guid.NewGuid(), name, description);
+        }
+
+        public async Task UpdateNameAsync(Exchange exchange, string newName)
+        {
+            Check.NotNull(exchange, nameof(exchange));
+            Check.NotNullOrWhiteSpace(newName, nameof(newName), ExchangeConsts.MaxNameLength, ExchangeConsts.MinNameLength);
+
+            var existingExchange = await _exchangeRepository.FindByNameAsync(newName);
+            if (existingExchange != null)
+            {
+                throw new ExchangeAlreadyExistsException(newName);
+            }
+
+            exchange.Name = newName;
         }
     }
 }
