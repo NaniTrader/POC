@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NaniTrader.Services.MarketData;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace NaniTrader.Services.Securities
 
         Task<EquitySecurityDto> CreateEquitySecurityAsync(CreateUpdateEquitySecurityDto input);
 
+        Task UpdateEquitySecurityAsync(Guid id, CreateUpdateEquitySecurityDto input);
+
         Task<PagedResultDto<EquitySecurityInListDto>> GetEquitySecurityPagedListWithNameFilterAsync(EquitySecurityListFilterDto input);
 
         Task DeleteEquitySecurityAsync(Guid id);
@@ -20,6 +23,8 @@ namespace NaniTrader.Services.Securities
         Task<EquityFutureSecurityDto> GetEquityFutureSecurityAsync(Guid id);
 
         Task<EquityFutureSecurityDto> CreateEquityFutureSecurityAsync(CreateUpdateEquityFutureSecurityDto input);
+
+        Task UpdateEquityFutureSecurityAsync(Guid id, CreateUpdateEquityFutureSecurityDto input);
 
         Task<PagedResultDto<EquityFutureSecurityInListDto>> GetEquityFutureSecurityPagedListWithNameFilterAsync(EquityFutureSecurityListFilterDto input);
 
@@ -29,6 +34,8 @@ namespace NaniTrader.Services.Securities
 
         Task<EquityOptionSecurityDto> CreateEquityOptionSecurityAsync(CreateUpdateEquityOptionSecurityDto input);
 
+        Task UpdateEquityOptionSecurityAsync(Guid id, CreateUpdateEquityOptionSecurityDto input);
+
         Task<PagedResultDto<EquityOptionSecurityInListDto>> GetEquityOptionSecurityPagedListWithNameFilterAsync(EquityOptionSecurityListFilterDto input);
 
         Task DeleteEquityOptionSecurityAsync(Guid id);
@@ -36,6 +43,8 @@ namespace NaniTrader.Services.Securities
         Task<IndexSecurityDto> GetIndexSecurityAsync(Guid id);
 
         Task<IndexSecurityDto> CreateIndexSecurityAsync(CreateUpdateIndexSecurityDto input);
+
+        Task UpdateIndexSecurityAsync(Guid id, CreateUpdateIndexSecurityDto input);
 
         Task<PagedResultDto<IndexSecurityInListDto>> GetIndexSecurityPagedListWithNameFilterAsync(IndexSecurityListFilterDto input);
 
@@ -45,6 +54,8 @@ namespace NaniTrader.Services.Securities
 
         Task<IndexFutureSecurityDto> CreateIndexFutureSecurityAsync(CreateUpdateIndexFutureSecurityDto input);
 
+        Task UpdateIndexFutureSecurityAsync(Guid id, CreateUpdateIndexFutureSecurityDto input);
+
         Task<PagedResultDto<IndexFutureSecurityInListDto>> GetIndexFutureSecurityPagedListWithNameFilterAsync(IndexFutureSecurityListFilterDto input);
 
         Task DeleteIndexFutureSecurityAsync(Guid id);
@@ -52,6 +63,8 @@ namespace NaniTrader.Services.Securities
         Task<IndexOptionSecurityDto> GetIndexOptionSecurityAsync(Guid id);
 
         Task<IndexOptionSecurityDto> CreateIndexOptionSecurityAsync(CreateUpdateIndexOptionSecurityDto input);
+
+        Task UpdateIndexOptionSecurityAsync(Guid id, CreateUpdateIndexOptionSecurityDto input);
 
         Task<PagedResultDto<IndexOptionSecurityInListDto>> GetIndexOptionSecurityPagedListWithNameFilterAsync(IndexOptionSecurityListFilterDto input);
 

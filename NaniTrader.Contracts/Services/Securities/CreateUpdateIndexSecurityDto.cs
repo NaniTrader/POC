@@ -1,4 +1,5 @@
-﻿using NaniTrader.Entities.Securities;
+﻿using NaniTrader.Attributes;
+using NaniTrader.Entities.Securities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,6 +18,7 @@ namespace NaniTrader.Services.Securities
         public string Description { get; set; } = string.Empty;
 
         [Required]
+        [NonEmptyGuid]
         public Guid ParentId { get; set; }
     }
 }

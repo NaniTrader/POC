@@ -16,5 +16,6 @@ public class NaniTraderBlazorAutoMapperProfile : Profile
         CreateMap<BrokerDto, CreateUpdateBrokerDto>();
         CreateMap<ExchangeDto, CreateUpdateExchangeDto>();
         CreateMap<MarketDataProviderDto, CreateUpdateMarketDataProviderDto>();
+        CreateMap<EquitySecurityDto, CreateUpdateEquitySecurityDto>();
     }
 }

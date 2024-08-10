@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using NaniTrader.Entities.Brokers;
 using NaniTrader.Entities.Securities;
+using NaniTrader.Services.Brokers;
 using NaniTrader.Services.Permissions;
 using System;
 using System.Collections.Generic;
@@ -85,6 +87,19 @@ namespace NaniTrader.Services.Securities
             return ObjectMapper.Map<EquitySecurity, EquitySecurityDto>(equitySecurity);
         }
 
+        [Authorize(NaniTraderPermissions.Securities.Edit)]
+        public async Task UpdateEquitySecurityAsync(Guid id, CreateUpdateEquitySecurityDto input)
+        {
+            var equitySecurity = await _equitySecurityRepository.GetAsync(id);
+
+            if (equitySecurity.Name != input.Name)
+            {
+                await _securityManager.UpdateEquitySecurityNameAsync(equitySecurity, input.Name);
+            }
+
+            await _equitySecurityRepository.UpdateAsync(equitySecurity);
+        }
+
         [Authorize(NaniTraderPermissions.Securities.Delete)]
         public async Task DeleteEquitySecurityAsync(Guid id)
         {
@@ -135,6 +150,19 @@ namespace NaniTrader.Services.Securities
             await _equityFutureSecurityRepository.InsertAsync(equityFutureSecurity);
 
             return ObjectMapper.Map<EquityFutureSecurity, EquityFutureSecurityDto>(equityFutureSecurity);
+        }
+
+        [Authorize(NaniTraderPermissions.Securities.Edit)]
+        public async Task UpdateEquityFutureSecurityAsync(Guid id, CreateUpdateEquityFutureSecurityDto input)
+        {
+            var equityFutureSecurity = await _equityFutureSecurityRepository.GetAsync(id);
+
+            if (equityFutureSecurity.Name != input.Name)
+            {
+                await _securityManager.UpdateEquityFutureSecurityNameAsync(equityFutureSecurity, input.Name);
+            }
+
+            await _equityFutureSecurityRepository.UpdateAsync(equityFutureSecurity);
         }
 
         [Authorize(NaniTraderPermissions.Securities.Delete)]
@@ -189,6 +217,19 @@ namespace NaniTrader.Services.Securities
             return ObjectMapper.Map<EquityOptionSecurity, EquityOptionSecurityDto>(equityOptionSecurity);
         }
 
+        [Authorize(NaniTraderPermissions.Securities.Edit)]
+        public async Task UpdateEquityOptionSecurityAsync(Guid id, CreateUpdateEquityOptionSecurityDto input)
+        {
+            var equityOptionSecurity = await _equityOptionSecurityRepository.GetAsync(id);
+
+            if (equityOptionSecurity.Name != input.Name)
+            {
+                await _securityManager.UpdateEquityOptionSecurityNameAsync(equityOptionSecurity, input.Name);
+            }
+
+            await _equityOptionSecurityRepository.UpdateAsync(equityOptionSecurity);
+        }
+
         [Authorize(NaniTraderPermissions.Securities.Delete)]
         public async Task DeleteEquityOptionSecurityAsync(Guid id)
         {
@@ -238,6 +279,19 @@ namespace NaniTrader.Services.Securities
             await _indexSecurityRepository.InsertAsync(indexSecurity);
 
             return ObjectMapper.Map<IndexSecurity, IndexSecurityDto>(indexSecurity);
+        }
+
+        [Authorize(NaniTraderPermissions.Securities.Edit)]
+        public async Task UpdateIndexSecurityAsync(Guid id, CreateUpdateIndexSecurityDto input)
+        {
+            var indexSecurity = await _indexSecurityRepository.GetAsync(id);
+
+            if (indexSecurity.Name != input.Name)
+            {
+                await _securityManager.UpdateIndexSecurityNameAsync(indexSecurity, input.Name);
+            }
+
+            await _indexSecurityRepository.UpdateAsync(indexSecurity);
         }
 
         [Authorize(NaniTraderPermissions.Securities.Delete)]
@@ -292,6 +346,19 @@ namespace NaniTrader.Services.Securities
             return ObjectMapper.Map<IndexFutureSecurity, IndexFutureSecurityDto>(indexFutureSecurity);
         }
 
+        [Authorize(NaniTraderPermissions.Securities.Edit)]
+        public async Task UpdateIndexFutureSecurityAsync(Guid id, CreateUpdateIndexFutureSecurityDto input)
+        {
+            var indexFutureSecurity = await _indexFutureSecurityRepository.GetAsync(id);
+
+            if (indexFutureSecurity.Name != input.Name)
+            {
+                await _securityManager.UpdateIndexFutureSecurityNameAsync(indexFutureSecurity, input.Name);
+            }
+
+            await _indexFutureSecurityRepository.UpdateAsync(indexFutureSecurity);
+        }
+
         [Authorize(NaniTraderPermissions.Securities.Delete)]
         public async Task DeleteIndexFutureSecurityAsync(Guid id)
         {
@@ -342,6 +409,19 @@ namespace NaniTrader.Services.Securities
             await _indexOptionSecurityRepository.InsertAsync(indexOptionSecurity);
 
             return ObjectMapper.Map<IndexOptionSecurity, IndexOptionSecurityDto>(indexOptionSecurity);
+        }
+
+        [Authorize(NaniTraderPermissions.Securities.Edit)]
+        public async Task UpdateIndexOptionSecurityAsync(Guid id, CreateUpdateIndexOptionSecurityDto input)
+        {
+            var indexOptionSecurity = await _indexOptionSecurityRepository.GetAsync(id);
+
+            if (indexOptionSecurity.Name != input.Name)
+            {
+                await _securityManager.UpdateIndexOptionSecurityNameAsync(indexOptionSecurity, input.Name);
+            }
+
+            await _indexOptionSecurityRepository.UpdateAsync(indexOptionSecurity);
         }
 
         [Authorize(NaniTraderPermissions.Securities.Delete)]

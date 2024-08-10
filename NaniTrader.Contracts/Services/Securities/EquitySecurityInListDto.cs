@@ -5,10 +5,10 @@ using Volo.Abp.Application.Dtos;
 
 namespace NaniTrader.Services.Securities
 {
-    public class EquitySecurityInListDto : AuditedEntityDto<int>
+    public class EquitySecurityInListDto : AuditedEntityDto<Guid>
     {
-        public string? Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string? Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }
