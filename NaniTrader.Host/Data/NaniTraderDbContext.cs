@@ -48,5 +48,11 @@ public class NaniTraderDbContext : AbpDbContext<NaniTraderDbContext>
         builder.ConfigureTenantManagement();
 
         /* Configure your own entities here */
+        builder.ConfigureNaniTraderBrokers(this);
+        builder.ConfigureNaniTraderExchanges(this);
+        builder.ConfigureNaniTraderMarketData(this);
+        builder.ConfigureNaniTraderMisc(this);
+        builder.ConfigureNaniTraderSecurities(this);
+        builder.ConfigureNaniTraderNavigations();
     }
 }

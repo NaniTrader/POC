@@ -10,10 +10,10 @@ namespace NaniTrader.Entities.Securities
 {
     public class SecurityNotFoundException : BusinessException
     {
-        public SecurityNotFoundException(Guid underlyingId)
-            : base(NaniTraderDomainErrorCodes.SecurityAlreadyExists)
+        public SecurityNotFoundException(Guid id)
+            : base(NaniTraderDomainErrorCodes.SecurityNotFound)
         {
-            WithData("underlyingId", underlyingId);
+            WithData("Id", id);
         }
     }
 }

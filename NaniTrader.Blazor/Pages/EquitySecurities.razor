@@ -111,16 +111,30 @@
                         </Field>
                     </Validation>
                     <Field>
-                        <FieldLabel>@L["SecurityParent"]</FieldLabel>
-                        <SelectList TItem="SecurityParent"
-                                    TValue="Guid"
-                                    Data="@SecurityParentList"
-                                    TextField="@((item)=>item.DisplayName)"
-                                    ValueField="@((item)=>item.Id)"
-                                    @bind-SelectedValue="@CreatingSecurityParentId"
-                                    DefaultItemText="Choose your security parent">
+                        <FieldLabel>@L["SecurityParentGroup"]</FieldLabel>
+                        <SelectList TItem="ParentType"
+                                    TValue="int"
+                                    Data="Enum.GetValues<ParentType>()"
+                                    TextField="@((item)=>item.ToString())"
+                                    ValueField="@((item)=>(int)item)"
+                                    SelectedValue="CreatingSecurityParentGroupId"
+                                    SelectedValueChanged="CreatingParentGroupChanged"
+                                    DefaultItemText="Choose your security parent group">
                         </SelectList>
                     </Field>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["SecurityParent"]</FieldLabel>
+                            <SelectList TItem="SecurityParent"
+                                        TValue="Guid"
+                                        Data="@CreatingSecurityParentList"
+                                        TextField="@((item)=>item.DisplayName)"
+                                        ValueField="@((item)=>item.Id)"
+                                        @bind-SelectedValue="@NewEquitySecurity.ParentId"
+                                        DefaultItemText="Choose your security parent">
+                            </SelectList>
+                        </Field>
+                    </Validation>
                 </Validations>
             </ModalBody>
             <ModalFooter>
@@ -170,15 +184,29 @@
                         </Field>
                     </Validation>
                     <Field>
-                        <FieldLabel>@L["SecurityParent"]</FieldLabel>
-                        <SelectList TItem="SecurityParent"
-                                    TValue="Guid"
-                                    Data="@SecurityParentList"
-                                    TextField="@((item)=>item.DisplayName)"
-                                    ValueField="@((item)=>item.Id)"
-                                    @bind-SelectedValue="@EditingSecurityParentId">
+                        <FieldLabel>@L["SecurityParentGroup"]</FieldLabel>
+                        <SelectList TItem="ParentType"
+                                    TValue="int"
+                                    Data="Enum.GetValues<ParentType>()"
+                                    TextField="@((item)=>item.ToString())"
+                                    ValueField="@((item)=>(int)item)"
+                                    SelectedValue="EditingSecurityParentGroupId"
+                                    SelectedValueChanged="EditingParentGroupChanged">
                         </SelectList>
                     </Field>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["SecurityParent"]</FieldLabel>
+                            <SelectList TItem="SecurityParent"
+                                        TValue="Guid"
+                                        Data="@EditingSecurityParentList"
+                                        TextField="@((item)=>item.DisplayName)"
+                                        ValueField="@((item)=>item.Id)"
+                                        @bind-SelectedValue="@EditingEquitySecurity.ParentId"
+                                        DefaultItemText="Choose your security parent group">
+                            </SelectList>
+                        </Field>
+                    </Validation>
                 </Validations>
             </ModalBody>
             <ModalFooter>

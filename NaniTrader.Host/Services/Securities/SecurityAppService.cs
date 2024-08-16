@@ -16,6 +16,8 @@ namespace NaniTrader.Services.Securities
     [Authorize(NaniTraderPermissions.Securities.Default)]
     public class SecurityAppService : NaniTraderAppService, ISecurityAppService
     {
+        // TODO Assess logic before updating the parentId or underlyingId for a given security.
+        // Underlying future and option should have same parent at any given time
         private readonly IEquitySecurityRepository _equitySecurityRepository;
         private readonly IEquityFutureSecurityRepository _equityFutureSecurityRepository;
         private readonly IEquityOptionSecurityRepository _equityOptionSecurityRepository;
@@ -97,6 +99,11 @@ namespace NaniTrader.Services.Securities
                 await _securityManager.UpdateEquitySecurityNameAsync(equitySecurity, input.Name);
             }
 
+            if (equitySecurity.ParentId != input.ParentId)
+            {
+                await _securityManager.UpdateEquitySecurityParentIdAsync(equitySecurity, input.ParentId);
+            }
+
             await _equitySecurityRepository.UpdateAsync(equitySecurity);
         }
 
@@ -160,6 +167,16 @@ namespace NaniTrader.Services.Securities
             if (equityFutureSecurity.Name != input.Name)
             {
                 await _securityManager.UpdateEquityFutureSecurityNameAsync(equityFutureSecurity, input.Name);
+            }
+
+            if (equityFutureSecurity.ParentId != input.ParentId)
+            {
+                await _securityManager.UpdateEquityFutureSecurityParentIdAsync(equityFutureSecurity, input.ParentId);
+            }
+
+            if (equityFutureSecurity.Underlying.Id != input.UnderlyingId)
+            {
+                await _securityManager.UpdateEquityFutureSecurityUnderlyingIdAsync(equityFutureSecurity, input.UnderlyingId);
             }
 
             await _equityFutureSecurityRepository.UpdateAsync(equityFutureSecurity);
@@ -227,6 +244,16 @@ namespace NaniTrader.Services.Securities
                 await _securityManager.UpdateEquityOptionSecurityNameAsync(equityOptionSecurity, input.Name);
             }
 
+            if (equityOptionSecurity.ParentId != input.ParentId)
+            {
+                await _securityManager.UpdateEquityOptionSecurityParentIdAsync(equityOptionSecurity, input.ParentId);
+            }
+
+            if (equityOptionSecurity.Underlying.Id != input.UnderlyingId)
+            {
+                await _securityManager.UpdateEquityOptionSecurityUnderlyingIdAsync(equityOptionSecurity, input.UnderlyingId);
+            }
+
             await _equityOptionSecurityRepository.UpdateAsync(equityOptionSecurity);
         }
 
@@ -289,6 +316,11 @@ namespace NaniTrader.Services.Securities
             if (indexSecurity.Name != input.Name)
             {
                 await _securityManager.UpdateIndexSecurityNameAsync(indexSecurity, input.Name);
+            }
+
+            if (indexSecurity.ParentId != input.ParentId)
+            {
+                await _securityManager.UpdateIndexSecurityParentIdAsync(indexSecurity, input.ParentId);
             }
 
             await _indexSecurityRepository.UpdateAsync(indexSecurity);
@@ -356,6 +388,16 @@ namespace NaniTrader.Services.Securities
                 await _securityManager.UpdateIndexFutureSecurityNameAsync(indexFutureSecurity, input.Name);
             }
 
+            if (indexFutureSecurity.ParentId != input.ParentId)
+            {
+                await _securityManager.UpdateIndexFutureSecurityParentIdAsync(indexFutureSecurity, input.ParentId);
+            }
+
+            if (indexFutureSecurity.Underlying.Id != input.UnderlyingId)
+            {
+                await _securityManager.UpdateIndexFutureSecurityUnderlyingIdAsync(indexFutureSecurity, input.UnderlyingId);
+            }
+
             await _indexFutureSecurityRepository.UpdateAsync(indexFutureSecurity);
         }
 
@@ -419,6 +461,16 @@ namespace NaniTrader.Services.Securities
             if (indexOptionSecurity.Name != input.Name)
             {
                 await _securityManager.UpdateIndexOptionSecurityNameAsync(indexOptionSecurity, input.Name);
+            }
+
+            if (indexOptionSecurity.ParentId != input.ParentId)
+            {
+                await _securityManager.UpdateIndexOptionSecurityParentIdAsync(indexOptionSecurity, input.ParentId);
+            }
+
+            if (indexOptionSecurity.Underlying.Id != input.UnderlyingId)
+            {
+                await _securityManager.UpdateIndexOptionSecurityUnderlyingIdAsync(indexOptionSecurity, input.UnderlyingId);
             }
 
             await _indexOptionSecurityRepository.UpdateAsync(indexOptionSecurity);

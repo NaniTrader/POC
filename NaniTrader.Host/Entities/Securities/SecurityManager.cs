@@ -63,6 +63,20 @@ namespace NaniTrader.Entities.Securities
             equitySecurity.Name = newName;
         }
 
+        public async Task UpdateEquitySecurityParentIdAsync(EquitySecurity equitySecurity, Guid newParentId)
+        {
+            Check.NotNull(equitySecurity, nameof(equitySecurity));
+            Check.NotDefaultOrNull<Guid>(newParentId, nameof(newParentId));
+            
+            var existingEquitySecurity = await _equitySecurityRepository.FindByParentIdAndNameAsync(newParentId, equitySecurity.Name);
+            if (existingEquitySecurity != null)
+            {
+                throw new SecurityAlreadyExistsException(newParentId, equitySecurity.Name);
+            }
+
+            equitySecurity.ParentId = newParentId;
+        }
+
         public async Task<EquityFutureSecurity> CreateEquityFutureSecurityAsync(Guid underlyingId, Guid parentId, string name, string description)
         {
             Check.NotDefaultOrNull<Guid>(underlyingId, nameof(underlyingId));
@@ -97,6 +111,34 @@ namespace NaniTrader.Entities.Securities
             }
 
             equityFutureSecurity.Name = newName;
+        }
+
+        public async Task UpdateEquityFutureSecurityParentIdAsync(EquityFutureSecurity equityFutureSecurity, Guid newParentId)
+        {
+            Check.NotNull(equityFutureSecurity, nameof(equityFutureSecurity));
+            Check.NotDefaultOrNull<Guid>(newParentId, nameof(newParentId));
+
+            var existingFutureEquitySecurity = await _equityFutureSecurityRepository.FindByParentIdAndNameAsync(newParentId, equityFutureSecurity.Name);
+            if (existingFutureEquitySecurity != null)
+            {
+                throw new SecurityAlreadyExistsException(newParentId, equityFutureSecurity.Name);
+            }
+
+            equityFutureSecurity.ParentId = newParentId;
+        }
+
+        public async Task UpdateEquityFutureSecurityUnderlyingIdAsync(EquityFutureSecurity equityFutureSecurity, Guid newUnderlyingId)
+        {
+            Check.NotNull(equityFutureSecurity, nameof(equityFutureSecurity));
+            Check.NotDefaultOrNull<Guid>(newUnderlyingId, nameof(newUnderlyingId));
+
+            var newUnderlyingSecurity = await _equitySecurityRepository.GetAsync(newUnderlyingId);
+            if (newUnderlyingSecurity == null)
+            {
+                throw new SecurityNotFoundException(newUnderlyingId);
+            }
+
+            equityFutureSecurity.Underlying = newUnderlyingSecurity;
         }
 
         public async Task<EquityOptionSecurity> CreateEquityOptionSecurityAsync(Guid underlyingId, Guid parentId, string name, string description)
@@ -135,6 +177,34 @@ namespace NaniTrader.Entities.Securities
             equityOptionSecurity.Name = newName;
         }
 
+        public async Task UpdateEquityOptionSecurityParentIdAsync(EquityOptionSecurity equityOptionSecurity, Guid newParentId)
+        {
+            Check.NotNull(equityOptionSecurity, nameof(equityOptionSecurity));
+            Check.NotDefaultOrNull<Guid>(newParentId, nameof(newParentId));
+
+            var existingOptionEquitySecurity = await _equityOptionSecurityRepository.FindByParentIdAndNameAsync(newParentId, equityOptionSecurity.Name);
+            if (existingOptionEquitySecurity != null)
+            {
+                throw new SecurityAlreadyExistsException(newParentId, equityOptionSecurity.Name);
+            }
+
+            equityOptionSecurity.ParentId = newParentId;
+        }
+
+        public async Task UpdateEquityOptionSecurityUnderlyingIdAsync(EquityOptionSecurity equityOptionSecurity, Guid newUnderlyingId)
+        {
+            Check.NotNull(equityOptionSecurity, nameof(equityOptionSecurity));
+            Check.NotDefaultOrNull<Guid>(newUnderlyingId, nameof(newUnderlyingId));
+
+            var newUnderlyingSecurity = await _equitySecurityRepository.GetAsync(newUnderlyingId);
+            if (newUnderlyingSecurity == null)
+            {
+                throw new SecurityNotFoundException(newUnderlyingId);
+            }
+
+            equityOptionSecurity.Underlying = newUnderlyingSecurity;
+        }
+
         public async Task<IndexSecurity> CreateIndexSecurityAsync(Guid parentId, string name, string description)
         {
             Check.NotDefaultOrNull<Guid>(parentId, nameof(parentId));
@@ -162,6 +232,20 @@ namespace NaniTrader.Entities.Securities
             }
 
             indexSecurity.Name = newName;
+        }
+
+        public async Task UpdateIndexSecurityParentIdAsync(IndexSecurity indexSecurity, Guid newParentId)
+        {
+            Check.NotNull(indexSecurity, nameof(indexSecurity));
+            Check.NotDefaultOrNull<Guid>(newParentId, nameof(newParentId));
+
+            var existingIndexSecurity = await _indexSecurityRepository.FindByParentIdAndNameAsync(newParentId, indexSecurity.Name);
+            if (existingIndexSecurity != null)
+            {
+                throw new SecurityAlreadyExistsException(newParentId, indexSecurity.Name);
+            }
+
+            indexSecurity.ParentId = newParentId;
         }
 
         public async Task<IndexFutureSecurity> CreateIndexFutureSecurityAsync(Guid underlyingId, Guid parentId, string name, string description)
@@ -200,6 +284,34 @@ namespace NaniTrader.Entities.Securities
             indexFutureSecurity.Name = newName;
         }
 
+        public async Task UpdateIndexFutureSecurityParentIdAsync(IndexFutureSecurity indexFutureSecurity, Guid newParentId)
+        {
+            Check.NotNull(indexFutureSecurity, nameof(indexFutureSecurity));
+            Check.NotDefaultOrNull<Guid>(newParentId, nameof(newParentId));
+
+            var existingIndexFutureSecurity = await _indexFutureSecurityRepository.FindByParentIdAndNameAsync(newParentId, indexFutureSecurity.Name);
+            if (existingIndexFutureSecurity != null)
+            {
+                throw new SecurityAlreadyExistsException(newParentId, indexFutureSecurity.Name);
+            }
+
+            indexFutureSecurity.ParentId = newParentId;
+        }
+
+        public async Task UpdateIndexFutureSecurityUnderlyingIdAsync(IndexFutureSecurity indexFutureSecurity, Guid newUnderlyingId)
+        {
+            Check.NotNull(indexFutureSecurity, nameof(indexFutureSecurity));
+            Check.NotDefaultOrNull<Guid>(newUnderlyingId, nameof(newUnderlyingId));
+
+            var newUnderlyingSecurity = await _indexSecurityRepository.GetAsync(newUnderlyingId);
+            if (newUnderlyingSecurity == null)
+            {
+                throw new SecurityNotFoundException(newUnderlyingId);
+            }
+
+            indexFutureSecurity.Underlying = newUnderlyingSecurity;
+        }
+
         public async Task<IndexOptionSecurity> CreateIndexOptionSecurityAsync(Guid underlyingId, Guid parentId, string name, string description)
         {
             Check.NotDefaultOrNull<Guid>(underlyingId, nameof(underlyingId));
@@ -234,6 +346,34 @@ namespace NaniTrader.Entities.Securities
             }
 
             indexOptionSecurity.Name = newName;
+        }
+
+        public async Task UpdateIndexOptionSecurityParentIdAsync(IndexOptionSecurity indexOptionSecurity, Guid newParentId)
+        {
+            Check.NotNull(indexOptionSecurity, nameof(indexOptionSecurity));
+            Check.NotDefaultOrNull<Guid>(newParentId, nameof(newParentId));
+
+            var existingIndexOptionSecurity = await _indexOptionSecurityRepository.FindByParentIdAndNameAsync(newParentId, indexOptionSecurity.Name);
+            if (existingIndexOptionSecurity != null)
+            {
+                throw new SecurityAlreadyExistsException(newParentId, indexOptionSecurity.Name);
+            }
+
+            indexOptionSecurity.ParentId = newParentId;
+        }
+
+        public async Task UpdateIndexOptionSecurityUnderlyingIdAsync(IndexOptionSecurity indexOptionSecurity, Guid newUnderlyingId)
+        {
+            Check.NotNull(indexOptionSecurity, nameof(indexOptionSecurity));
+            Check.NotDefaultOrNull<Guid>(newUnderlyingId, nameof(newUnderlyingId));
+
+            var newUnderlyingSecurity = await _indexSecurityRepository.GetAsync(newUnderlyingId);
+            if (newUnderlyingSecurity == null)
+            {
+                throw new SecurityNotFoundException(newUnderlyingId);
+            }
+
+            indexOptionSecurity.Underlying = newUnderlyingSecurity;
         }
     }
 }

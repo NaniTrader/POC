@@ -8,5 +8,6 @@
         public const string BhavCopyAlreadyExists = "NaniTrader:00003";
         public const string BrokerAlreadyExists = "NaniTrader:00004";
         public const string SecurityAlreadyExists = "NaniTrader:00005";
+        public const string SecurityNotFound = "NaniTrader:00006";
     }
 }

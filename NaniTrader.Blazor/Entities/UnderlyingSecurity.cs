@@ -1,9 +1,9 @@
 ﻿namespace NaniTrader.Entities
 {
-    public class SecurityParent
+    public class UnderlyingSecurity
     {
         public Guid Id { get; set; }
         public string DisplayName { get; set; } = string.Empty;
-        public ParentType ParentType { get; set; }
+        public Guid ParentId { get; set; }
     }
 }

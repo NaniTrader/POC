@@ -9,32 +9,35 @@ using NaniTrader.Entities;
 using NaniTrader.Services.Brokers;
 using NaniTrader.Services.Exchanges;
 using NaniTrader.Services.MarketData;
+using static NaniTrader.Services.Permissions.NaniTraderPermissions;
+using System.Collections.Generic;
 
 namespace NaniTrader.Pages
 {
-    public partial class EquitySecurities
+    public partial class EquityFutureSecurities
     {
-        private IReadOnlyList<EquitySecurityInListDto> EquitySecuritiesList { get; set; } = new List<EquitySecurityInListDto>();
+        private IReadOnlyList<EquityFutureSecurityInListDto> EquityFutureSecuritiesList { get; set; } = new List<EquityFutureSecurityInListDto>();
         private List<SecurityParent> MasterSecurityParentList { get; set; } = new List<SecurityParent>();
         private List<SecurityParent> CreatingSecurityParentList { get; set; } = new List<SecurityParent>();
         private List<SecurityParent> EditingSecurityParentList { get; set; } = new List<SecurityParent>();
+        private List<UnderlyingSecurity> UnderlyingSecurityList { get; set; } = new List<UnderlyingSecurity>();
         private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
         private int CurrentPage { get; set; }
         private string CurrentSorting { get; set; } = string.Empty;
         private int TotalCount { get; set; }
 
-        private bool CanCreateEquitySecurity { get; set; }
-        private bool CanEditEquitySecurity { get; set; }
-        private bool CanDeleteEquitySecurity { get; set; }
+        private bool CanCreateEquityFutureSecurity { get; set; }
+        private bool CanEditEquityFutureSecurity { get; set; }
+        private bool CanDeleteEquityFutureSecurity { get; set; }
 
-        private CreateUpdateEquitySecurityDto NewEquitySecurity { get; set; }
+        private CreateUpdateEquityFutureSecurityDto NewEquityFutureSecurity { get; set; }
 
-        private Guid EditingEquitySecurityId { get; set; }
+        private Guid EditingEquityFutureSecurityId { get; set; }
         private int EditingSecurityParentGroupId { get; set; }
-        private CreateUpdateEquitySecurityDto EditingEquitySecurity { get; set; }
+        private CreateUpdateEquityFutureSecurityDto EditingEquityFutureSecurity { get; set; }
 
-        private Modal? CreateEquitySecurityModal { get; set; }
-        private Modal? EditEquitySecurityModal { get; set; }
+        private Modal? CreateEquityFutureSecurityModal { get; set; }
+        private Modal? EditEquityFutureSecurityModal { get; set; }
 
         private int CreatingSecurityParentGroupId { get; set; }
 
@@ -42,35 +45,36 @@ namespace NaniTrader.Pages
 
         private Validations? EditValidationsRef;
 
-        public EquitySecurities()
+        public EquityFutureSecurities()
         {
-            NewEquitySecurity = new CreateUpdateEquitySecurityDto();
-            EditingEquitySecurity = new CreateUpdateEquitySecurityDto();
+            NewEquityFutureSecurity = new CreateUpdateEquityFutureSecurityDto();
+            EditingEquityFutureSecurity = new CreateUpdateEquityFutureSecurityDto();
         }
 
         protected override async Task OnInitializedAsync()
         {
             await SetPermissionsAsync();
-            await GetEquitySecuritiesAsync();
+            await GetEquityFutureSecuritiesAsync();
+            await GetUnderlyingSecuritiesAsync();
             await GetSecuritiesParentAsync();
         }
 
         private async Task SetPermissionsAsync()
         {
-            CanCreateEquitySecurity = await AuthorizationService
+            CanCreateEquityFutureSecurity = await AuthorizationService
                 .IsGrantedAsync(NaniTraderPermissions.Securities.Create);
 
-            CanEditEquitySecurity = await AuthorizationService
+            CanEditEquityFutureSecurity = await AuthorizationService
                 .IsGrantedAsync(NaniTraderPermissions.Securities.Edit);
 
-            CanDeleteEquitySecurity = await AuthorizationService
+            CanDeleteEquityFutureSecurity = await AuthorizationService
                 .IsGrantedAsync(NaniTraderPermissions.Securities.Delete);
         }
 
-        private async Task GetEquitySecuritiesAsync()
+        private async Task GetEquityFutureSecuritiesAsync()
         {
-            var result = await SecurityAppService.GetEquitySecurityPagedListWithNameFilterAsync(
-                new EquitySecurityListFilterDto
+            var result = await SecurityAppService.GetEquityFutureSecurityPagedListWithNameFilterAsync(
+                new EquityFutureSecurityListFilterDto
                 {
                     MaxResultCount = PageSize,
                     SkipCount = CurrentPage * PageSize,
@@ -78,8 +82,22 @@ namespace NaniTrader.Pages
                 }
             );
 
-            EquitySecuritiesList = result.Items;
+            EquityFutureSecuritiesList = result.Items;
             TotalCount = (int)result.TotalCount;
+        }
+
+        private async Task GetUnderlyingSecuritiesAsync()
+        {
+            // TODO Filter Underlying securities with parent type and call the list upon parent type change in new and edit modals
+            var underlyingSecurities = await SecurityAppService.GetEquitySecurityPagedListWithNameFilterAsync(
+                new EquitySecurityListFilterDto
+                {
+                    MaxResultCount = 1000, // TODO implement Get All
+                    SkipCount = 0,
+                    Sorting = string.Empty
+                }
+            );
+            UnderlyingSecurityList.AddRange(underlyingSecurities.Items.Select(x => new UnderlyingSecurity { Id = x.Id, DisplayName = x.Name }).ToList());
         }
 
         private async Task GetSecuritiesParentAsync()
@@ -119,7 +137,7 @@ namespace NaniTrader.Pages
             CreatingSecurityParentGroupId = 0;
         }
 
-        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<EquitySecurityInListDto> e)
+        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<EquityFutureSecurityInListDto> e)
         {
             CurrentSorting = e.Columns
                 .Where(c => c.SortDirection != SortDirection.Default)
@@ -127,30 +145,30 @@ namespace NaniTrader.Pages
                 .JoinAsString(",");
             CurrentPage = e.Page - 1;
 
-            await GetEquitySecuritiesAsync();
+            await GetEquityFutureSecuritiesAsync();
 
             await InvokeAsync(StateHasChanged);
         }
 
-        private async void OpenCreateEquitySecurityModal()
+        private async void OpenCreateEquityFutureSecurityModal()
         {
             CreatingSecurityParentList = MasterSecurityParentList.ToList();
             EditingSecurityParentList = MasterSecurityParentList.ToList();
             await (CreateValidationsRef?.ClearAll() ?? Task.CompletedTask);
 
-            NewEquitySecurity = new CreateUpdateEquitySecurityDto();
+            NewEquityFutureSecurity = new CreateUpdateEquityFutureSecurityDto();
             CreatingParentGroupChanged(CreatingSecurityParentGroupId);
-            await (CreateEquitySecurityModal?.Show() ?? Task.CompletedTask);
+            await (CreateEquityFutureSecurityModal?.Show() ?? Task.CompletedTask);
         }
 
-        private async Task CreateEquitySecurityAsync()
+        private async Task CreateEquityFutureSecurityAsync()
         {
             var validationResult = await (CreateValidationsRef?.ValidateAll() ?? Task.FromResult(false));
             if (validationResult)
             {
-                await SecurityAppService.CreateEquitySecurityAsync(NewEquitySecurity);
-                await GetEquitySecuritiesAsync();
-                await (CreateEquitySecurityModal?.Hide() ?? Task.CompletedTask);
+                await SecurityAppService.CreateEquityFutureSecurityAsync(NewEquityFutureSecurity);
+                await GetEquityFutureSecuritiesAsync();
+                await (CreateEquityFutureSecurityModal?.Hide() ?? Task.CompletedTask);
             }
         }
 
@@ -178,24 +196,24 @@ namespace NaniTrader.Pages
             }
         }
 
-        private async void CloseCreateEquitySecurityModal()
+        private async void CloseCreateEquityFutureSecurityModal()
         {
-            await (CreateEquitySecurityModal?.Hide() ?? Task.CompletedTask);
+            await (CreateEquityFutureSecurityModal?.Hide() ?? Task.CompletedTask);
         }
 
-        private async void OpenEditEquitySecurityModal(EquitySecurityInListDto equitySecurityInList)
+        private async void OpenEditEquityFutureSecurityModal(EquityFutureSecurityInListDto equityFutureSecurityInList)
         {
             CreatingSecurityParentList = MasterSecurityParentList.ToList();
             EditingSecurityParentList = MasterSecurityParentList.ToList();
 
             await (EditValidationsRef?.ClearAll() ?? Task.CompletedTask);
 
-            EditingEquitySecurityId = equitySecurityInList.Id;
-            EquitySecurityDto equitySecurity = await SecurityAppService.GetEquitySecurityAsync(EditingEquitySecurityId);
-            EditingEquitySecurity = ObjectMapper.Map<EquitySecurityDto, CreateUpdateEquitySecurityDto>(equitySecurity);
-            EditingSecurityParentGroupId = (int)MasterSecurityParentList.Where(x => x.Id == EditingEquitySecurity.ParentId).First().ParentType;
+            EditingEquityFutureSecurityId = equityFutureSecurityInList.Id;
+            EquityFutureSecurityDto equityFutureSecurity = await SecurityAppService.GetEquityFutureSecurityAsync(EditingEquityFutureSecurityId);
+            EditingEquityFutureSecurity = ObjectMapper.Map<EquityFutureSecurityDto, CreateUpdateEquityFutureSecurityDto>(equityFutureSecurity);
+            EditingSecurityParentGroupId = (int)MasterSecurityParentList.Where(x => x.Id == EditingEquityFutureSecurity.ParentId).First().ParentType;
             EditingParentGroupChanged(EditingSecurityParentGroupId);
-            await (EditEquitySecurityModal?.Show() ?? Task.CompletedTask);
+            await (EditEquityFutureSecurityModal?.Show() ?? Task.CompletedTask);
         }
 
         private void EditingParentGroupChanged(int newParentGroupId)
@@ -203,58 +221,58 @@ namespace NaniTrader.Pages
             if (newParentGroupId == 1)
             {
                 if (EditingSecurityParentGroupId != newParentGroupId)
-                    EditingEquitySecurity.ParentId = default;
+                    EditingEquityFutureSecurity.ParentId = default;
                 EditingSecurityParentGroupId = newParentGroupId;
                 EditingSecurityParentList = MasterSecurityParentList.Where(x => x.ParentType == ParentType.Exchange).ToList();
             }
             else if (newParentGroupId == 2)
             {
                 if (EditingSecurityParentGroupId != newParentGroupId)
-                    EditingEquitySecurity.ParentId = default;
+                    EditingEquityFutureSecurity.ParentId = default;
                 EditingSecurityParentGroupId = newParentGroupId;
                 EditingSecurityParentList = MasterSecurityParentList.Where(x => x.ParentType == ParentType.Broker).ToList();
             }
             else if (newParentGroupId == 3)
             {
                 if (EditingSecurityParentGroupId != newParentGroupId)
-                    EditingEquitySecurity.ParentId = default;
+                    EditingEquityFutureSecurity.ParentId = default;
                 EditingSecurityParentGroupId = newParentGroupId;
                 EditingSecurityParentList = MasterSecurityParentList.Where(x => x.ParentType == ParentType.MarketDataProvider).ToList();
             }
             else
             {
-                EditingEquitySecurity.ParentId = default;
+                EditingEquityFutureSecurity.ParentId = default;
                 EditingSecurityParentGroupId = newParentGroupId;
                 EditingSecurityParentList = new List<SecurityParent>();
             }
         }
 
-        private async Task UpdateEquitySecurityAsync()
+        private async Task UpdateEquityFutureSecurityAsync()
         {
             var validationResult = await (EditValidationsRef?.ValidateAll() ?? Task.FromResult(false));
             if (validationResult)
             {
-                await SecurityAppService.UpdateEquitySecurityAsync(EditingEquitySecurityId, EditingEquitySecurity);
-                await GetEquitySecuritiesAsync();
-                await (EditEquitySecurityModal?.Hide() ?? Task.CompletedTask);
+                await SecurityAppService.UpdateEquityFutureSecurityAsync(EditingEquityFutureSecurityId, EditingEquityFutureSecurity);
+                await GetEquityFutureSecuritiesAsync();
+                await (EditEquityFutureSecurityModal?.Hide() ?? Task.CompletedTask);
             }
         }
 
-        private async void CloseEditEquitySecurityModal()
+        private async void CloseEditEquityFutureSecurityModal()
         {
-            await (EditEquitySecurityModal?.Hide() ?? Task.CompletedTask);
+            await (EditEquityFutureSecurityModal?.Hide() ?? Task.CompletedTask);
         }
 
-        private async Task DeleteEquitySecurityAsync(EquitySecurityInListDto equitySecurityInList)
+        private async Task DeleteEquityFutureSecurityAsync(EquityFutureSecurityInListDto equityFutureSecurityInList)
         {
-            var confirmMessage = L["EquitySecurityDeletionConfirmationMessage", equitySecurityInList.Name];
+            var confirmMessage = L["EquityFutureSecurityDeletionConfirmationMessage", equityFutureSecurityInList.Name];
             if (!await Message.Confirm(confirmMessage))
             {
                 return;
             }
 
-            await SecurityAppService.DeleteEquitySecurityAsync(equitySecurityInList.Id);
-            await GetEquitySecuritiesAsync();
+            await SecurityAppService.DeleteEquityFutureSecurityAsync(equityFutureSecurityInList.Id);
+            await GetEquityFutureSecuritiesAsync();
         }
     }
 }
