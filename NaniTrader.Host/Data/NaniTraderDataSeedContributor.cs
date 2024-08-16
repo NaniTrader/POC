@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using NaniTrader.Entities.Brokers;
 using NaniTrader.Entities.Exchanges;
@@ -6,6 +7,7 @@ using NaniTrader.Entities.MarketData;
 using NaniTrader.Entities.Misc;
 using NaniTrader.Entities.Securities;
 using NaniTrader.Localization;
+using NaniTrader.Pages;
 using OpenIddict.Abstractions;
 using Volo.Abp;
 using Volo.Abp.Authorization.Permissions;
@@ -77,6 +79,9 @@ public class NaniTraderDataSeedContributor : IDataSeedContributor, ITransientDep
         await CreateEquitySecuritiesAsync();
         await CreateEquityFutureSecuritiesAsync();
         await CreateEquityOptionSecuritiesAsync();
+        await CreateIndexSecuritiesAsync();
+        await CreateIndexFutureSecuritiesAsync();
+        await CreateIndexOptionSecuritiesAsync();
     }
 
     private async Task CreateCountriesAsync()
@@ -330,15 +335,14 @@ public class NaniTraderDataSeedContributor : IDataSeedContributor, ITransientDep
         var nseExchange = await _exchangeRepository.FindByNameAsync("NSE");
         var bseExchange = await _exchangeRepository.FindByNameAsync("BSE");
 
-        var equitySecurities = new List<EquitySecurity>
+        if (nseExchange?.Id != null && bseExchange?.Id != null)
         {
-            new EquitySecurity(_guidGenerator.Create(),nseExchange?.Id ?? default, "HDFC", "HDFC Bank"),
-            new EquitySecurity(_guidGenerator.Create(),nseExchange?.Id ?? default, "SBIN", "SBI Bank"),
-            new EquitySecurity(_guidGenerator.Create(),bseExchange?.Id ?? default, "HDFC", "HDFC Bank"),
-            new EquitySecurity(_guidGenerator.Create(),bseExchange?.Id ?? default, "Kotak", "Kotak Bank")
+            var nseHDFC = new EquitySecurity(_guidGenerator.Create(), nseExchange.Id, "HDFC", "HDFC Bank");
+            var nseSBIN = new EquitySecurity(_guidGenerator.Create(), nseExchange.Id , "SBIN", "SBI Bank");
+            var bseHDFC = new EquitySecurity(_guidGenerator.Create(), bseExchange.Id , "HDFC", "HDFC Bank");
+            var bseKotak = new EquitySecurity(_guidGenerator.Create(), bseExchange.Id , "Kotak", "Kotak Bank");
+            await _equitySecurityRepository.InsertManyAsync(new List<EquitySecurity>() { nseHDFC, nseSBIN, bseHDFC, bseKotak }, autoSave: true);
         };
-
-        await _equitySecurityRepository.InsertManyAsync(equitySecurities, autoSave: true);
     }
 
     private async Task CreateEquityFutureSecuritiesAsync()
@@ -356,9 +360,10 @@ public class NaniTraderDataSeedContributor : IDataSeedContributor, ITransientDep
         var bseHDFC = await _equitySecurityRepository.FindByParentIdAndNameAsync(bseExchange?.Id ?? default, "HDFC");
         var bseKotak = await _equitySecurityRepository.FindByParentIdAndNameAsync(bseExchange?.Id ?? default, "Kotak");
 
-        if (nseHDFC != null && nseExchange?.Id != null) {
+        if (nseHDFC != null && nseExchange?.Id != null)
+        {
             var hdfcFut1000 = new EquityFutureSecurity(_guidGenerator.Create(), nseExchange.Id, nseHDFC, "HDFCFUT1000", "HDFC Bank 1000 Future");
-            var hdfcFut2000 = new EquityFutureSecurity(_guidGenerator.Create(), nseExchange.Id , nseHDFC, "HDFCFUT2000", "HDFC Bank 2000 Future");
+            var hdfcFut2000 = new EquityFutureSecurity(_guidGenerator.Create(), nseExchange.Id, nseHDFC, "HDFCFUT2000", "HDFC Bank 2000 Future");
             await _equityFutureSecurityRepository.InsertManyAsync(new List<EquityFutureSecurity>() { hdfcFut1000, hdfcFut2000 }, autoSave: true);
         }
 
@@ -425,6 +430,114 @@ public class NaniTraderDataSeedContributor : IDataSeedContributor, ITransientDep
             var bseKotakOpt1000 = new EquityOptionSecurity(_guidGenerator.Create(), bseExchange.Id, bseKotak, "KOTAKOPT1000", "KOTAK Bank 1000 Option");
             var bseKotakOpt2000 = new EquityOptionSecurity(_guidGenerator.Create(), bseExchange.Id, bseKotak, "KOTAKOPT2000", "KOTAK Bank 2000 Option");
             await _equityOptionSecurityRepository.InsertManyAsync(new List<EquityOptionSecurity>() { bseKotakOpt1000, bseKotakOpt2000 }, autoSave: true);
+        }
+    }
+
+    private async Task CreateIndexSecuritiesAsync()
+    {
+        if (await _indexSecurityRepository.GetCountAsync() > 0)
+        {
+            return;
+        }
+
+        var nseExchange = await _exchangeRepository.FindByNameAsync("NSE");
+        var bseExchange = await _exchangeRepository.FindByNameAsync("BSE");
+
+        if (nseExchange?.Id != null && bseExchange?.Id != null)
+        {
+            var nifty = new IndexSecurity(_guidGenerator.Create(), nseExchange.Id, "NIFTY", "NIFTY");
+            var bankNifty = new IndexSecurity(_guidGenerator.Create(), nseExchange.Id, "BANKNIFTY", "NIFTY BANK");
+            var sensex = new IndexSecurity(_guidGenerator.Create(), bseExchange.Id, "SENSEX", "SENSEX");
+            var bankex = new IndexSecurity(_guidGenerator.Create(), bseExchange.Id, "BANKEX", "SENSEX BANK");
+            await _indexSecurityRepository.InsertManyAsync(new List<IndexSecurity>() { nifty, bankNifty, sensex, bankex }, autoSave: true);
+        };
+    }
+
+    private async Task CreateIndexFutureSecuritiesAsync()
+    {
+        if (await _indexFutureSecurityRepository.GetCountAsync() > 0)
+        {
+            return;
+        }
+
+        var nseExchange = await _exchangeRepository.FindByNameAsync("NSE");
+        var bseExchange = await _exchangeRepository.FindByNameAsync("BSE");
+
+        var nifty = await _indexSecurityRepository.FindByParentIdAndNameAsync(nseExchange?.Id ?? default, "NIFTY");
+        var bankNifty = await _indexSecurityRepository.FindByParentIdAndNameAsync(nseExchange?.Id ?? default, "BANKNIFTY");
+        var sensex = await _indexSecurityRepository.FindByParentIdAndNameAsync(bseExchange?.Id ?? default, "SENSEX");
+        var bankex = await _indexSecurityRepository.FindByParentIdAndNameAsync(bseExchange?.Id ?? default, "BANKEX");
+
+        if (nifty != null && nseExchange?.Id != null)
+        {
+            var niftyFut1000 = new IndexFutureSecurity(_guidGenerator.Create(), nseExchange.Id, nifty, "NIFTYFUT1000", "NIFTY 1000 Future");
+            var niftyFut2000 = new IndexFutureSecurity(_guidGenerator.Create(), nseExchange.Id, nifty, "NIFTYFUT2000", "NIFTY 2000 Future");
+            await _indexFutureSecurityRepository.InsertManyAsync(new List<IndexFutureSecurity>() { niftyFut1000, niftyFut2000 }, autoSave: true);
+        }
+
+        if (bankNifty != null && nseExchange?.Id != null)
+        {
+            var bankNiftyFut1000 = new IndexFutureSecurity(_guidGenerator.Create(), nseExchange.Id, bankNifty, "BANKNIFTYFUT1000", "Bank Nifty 1000 Future");
+            var bankNiftyFut2000 = new IndexFutureSecurity(_guidGenerator.Create(), nseExchange.Id, bankNifty, "BANKNIFTYFUT2000", "Bank Nifty 2000 Future");
+            await _indexFutureSecurityRepository.InsertManyAsync(new List<IndexFutureSecurity>() { bankNiftyFut1000, bankNiftyFut2000 }, autoSave: true);
+        }
+
+        if (sensex != null && bseExchange?.Id != null)
+        {
+            var sensexFut1000 = new IndexFutureSecurity(_guidGenerator.Create(), bseExchange.Id, sensex, "SENSEXFUT1000", "SENSEX 1000 Future");
+            var sensexFut2000 = new IndexFutureSecurity(_guidGenerator.Create(), bseExchange.Id, sensex, "SENSEXFUT2000", "SENSEX 2000 Future");
+            await _indexFutureSecurityRepository.InsertManyAsync(new List<IndexFutureSecurity>() { sensexFut1000, sensexFut2000 }, autoSave: true);
+        }
+
+        if (bankex != null && bseExchange?.Id != null)
+        {
+            var bankexFut1000 = new IndexFutureSecurity(_guidGenerator.Create(), bseExchange.Id, bankex, "BANKEXFUT1000", "Sensex Bank 1000 Future");
+            var bankexFut2000 = new IndexFutureSecurity(_guidGenerator.Create(), bseExchange.Id, bankex, "BANKEXFUT2000", "Sensex Bank 2000 Future");
+            await _indexFutureSecurityRepository.InsertManyAsync(new List<IndexFutureSecurity>() { bankexFut1000, bankexFut2000 }, autoSave: true);
+        }
+    }
+
+    private async Task CreateIndexOptionSecuritiesAsync()
+    {
+        if (await _indexOptionSecurityRepository.GetCountAsync() > 0)
+        {
+            return;
+        }
+
+        var nseExchange = await _exchangeRepository.FindByNameAsync("NSE");
+        var bseExchange = await _exchangeRepository.FindByNameAsync("BSE");
+
+        var nifty = await _indexSecurityRepository.FindByParentIdAndNameAsync(nseExchange?.Id ?? default, "NIFTY");
+        var bankNifty = await _indexSecurityRepository.FindByParentIdAndNameAsync(nseExchange?.Id ?? default, "BANKNIFTY");
+        var sensex = await _indexSecurityRepository.FindByParentIdAndNameAsync(bseExchange?.Id ?? default, "SENSEX");
+        var bankex = await _indexSecurityRepository.FindByParentIdAndNameAsync(bseExchange?.Id ?? default, "BANKEX");
+
+        if (nifty != null && nseExchange?.Id != null)
+        {
+            var niftyOpt1000 = new IndexOptionSecurity(_guidGenerator.Create(), nseExchange.Id, nifty, "NIFTYOPT1000", "NIFTY 1000 Option");
+            var niftyOpt2000 = new IndexOptionSecurity(_guidGenerator.Create(), nseExchange.Id, nifty, "NIFTYOPT2000", "NIFTY 2000 Option");
+            await _indexOptionSecurityRepository.InsertManyAsync(new List<IndexOptionSecurity>() { niftyOpt1000, niftyOpt2000 }, autoSave: true);
+        }
+
+        if (bankNifty != null && nseExchange?.Id != null)
+        {
+            var bankNiftyOpt1000 = new IndexOptionSecurity(_guidGenerator.Create(), nseExchange.Id, bankNifty, "BANKNIFTYOPT1000", "Bank Nifty 1000 Option");
+            var bankNiftyOpt2000 = new IndexOptionSecurity(_guidGenerator.Create(), nseExchange.Id, bankNifty, "BANKNIFTYOPT2000", "Bank Nifty 2000 Option");
+            await _indexOptionSecurityRepository.InsertManyAsync(new List<IndexOptionSecurity>() { bankNiftyOpt1000, bankNiftyOpt2000 }, autoSave: true);
+        }
+
+        if (sensex != null && bseExchange?.Id != null)
+        {
+            var sensexOpt1000 = new IndexOptionSecurity(_guidGenerator.Create(), bseExchange.Id, sensex, "SENSEXOPT1000", "SENSEX 1000 Option");
+            var sensexOpt2000 = new IndexOptionSecurity(_guidGenerator.Create(), bseExchange.Id, sensex, "SENSEXOPT2000", "SENSEX 2000 Option");
+            await _indexOptionSecurityRepository.InsertManyAsync(new List<IndexOptionSecurity>() { sensexOpt1000, sensexOpt2000 }, autoSave: true);
+        }
+
+        if (bankex != null && bseExchange?.Id != null)
+        {
+            var bankexOpt1000 = new IndexOptionSecurity(_guidGenerator.Create(), bseExchange.Id, bankex, "BANKEXOPT1000", "Sensex Bank 1000 Option");
+            var bankexOpt2000 = new IndexOptionSecurity(_guidGenerator.Create(), bseExchange.Id, bankex, "BANKEXOPT2000", "Sensex Bank 2000 Option");
+            await _indexOptionSecurityRepository.InsertManyAsync(new List<IndexOptionSecurity>() { bankexOpt1000, bankexOpt2000 }, autoSave: true);
         }
     }
 }

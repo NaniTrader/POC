@@ -1,9 +1,252 @@
 ﻿@page "/equity-option-securities"
 @attribute [Authorize(NaniTraderPermissions.Securities.Default)]
+@inherits NaniTraderComponentBase
+@inject ISecurityAppService SecurityAppService
+@inject IBrokerAppService BrokerAppService
+@inject IExchangeAppService ExchangeAppService
+@inject IMarketDataProviderAppService MarketDataProviderAppService
+@inject AbpBlazorMessageLocalizerHelper<NaniTraderResource> LH
+@using Blazorise.Components
+@using NaniTrader.Entities
+@using NaniTrader.Services.Brokers
+@using NaniTrader.Services.Exchanges
+@using NaniTrader.Services.MarketData
 @using NaniTrader.Services.Permissions
+@using NaniTrader.Localization
+@using NaniTrader.Services.Securities
+@using Volo.Abp.AspNetCore.Components.Web
 
-<h2>Equity Option Securities List</h2>
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h2>@L["EquityOptionSecurities"]</h2>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                @if (CanCreateEquityOptionSecurity)
+                {
+                    <Button Color="Color.Primary"
+                            Clicked="OpenCreateEquityOptionSecurityModal">
+                        @L["NewEquityOptionSecurity"]
+                    </Button>
+                }
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="EquityOptionSecurityInListDto"
+                  Data="EquityOptionSecuritiesList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize">
+            <DataGridColumns>
+                <DataGridColumn Width="150px"
+                                TItem="EquityOptionSecurityInListDto"
+                                Field="@nameof(EquityOptionSecurityInListDto.Id)"
+                                Sortable="false"
+                                Caption="@L["Actions"]">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @if (CanEditEquityOptionSecurity)
+                                {
+                                    <DropdownItem Clicked="() => OpenEditEquityOptionSecurityModal(context)">
+                                        @L["Edit"]
+                                    </DropdownItem>
+                                }
+                                @if (CanDeleteEquityOptionSecurity)
+                                {
+                                    <DropdownItem Clicked="() => DeleteEquityOptionSecurityAsync(context)">
+                                        @L["Delete"]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EquityOptionSecurityInListDto"
+                                Field="@nameof(EquityOptionSecurityInListDto.Name)"
+                                Caption="@L["Name"]"></DataGridColumn>
+                <DataGridColumn TItem="EquityOptionSecurityInListDto"
+                                Field="@nameof(EquityOptionSecurityInListDto.Description)"
+                                Caption="@L["Description"]">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
 
-@code {
+<Modal @ref="CreateEquityOptionSecurityModal">
+    @* <ModalBackdrop /> TODO: check sample code*@
+    <ModalContent IsCentered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@L["NewEquityOptionSecurity"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateEquityOptionSecurityModal" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@CreateValidationsRef" Model="@NewEquityOptionSecurity" ValidateOnLoad="false">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Name"]</FieldLabel>
+                            <TextEdit @bind-Text="@NewEquityOptionSecurity.Name">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Description"]</FieldLabel>
+                            <TextEdit @bind-Text="@NewEquityOptionSecurity.Description">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Field>
+                        <FieldLabel>@L["SecurityParentGroup"]</FieldLabel>
+                        <SelectList TItem="ParentType"
+                                    TValue="int"
+                                    Data="Enum.GetValues<ParentType>()"
+                                    TextField="@((item)=>item.ToString())"
+                                    ValueField="@((item)=>(int)item)"
+                                    SelectedValue="CreatingSecurityParentGroupId"
+                                    SelectedValueChanged="CreatingParentGroupChanged"
+                                    DefaultItemText="Choose your security parent group">
+                        </SelectList>
+                    </Field>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["SecurityParent"]</FieldLabel>
+                            <SelectList TItem="SecurityParent"
+                                        TValue="Guid"
+                                        Data="@CreatingSecurityParentList"
+                                        TextField="@((item)=>item.DisplayName)"
+                                        ValueField="@((item)=>item.Id)"
+                                        @bind-SelectedValue="@NewEquityOptionSecurity.ParentId"
+                                        DefaultItemText="Choose your security parent">
+                            </SelectList>
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["UnderlyingSecurity"]</FieldLabel>
+                            <SelectList TItem="UnderlyingSecurity"
+                                        TValue="Guid"
+                                        Data="@UnderlyingSecurityList"
+                                        TextField="@((item)=>item.DisplayName)"
+                                        ValueField="@((item)=>item.Id)"
+                                        @bind-SelectedValue="@NewEquityOptionSecurity.UnderlyingId"
+                                        DefaultItemText="Choose your underlying security">
+                            </SelectList>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateEquityOptionSecurityModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="CreateEquityOptionSecurityAsync">
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
 
-}
+<Modal @ref="EditEquityOptionSecurityModal">
+    @* <ModalBackdrop /> TODO: check sample code*@
+    <ModalContent IsCentered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@EditingEquityOptionSecurity.Name</ModalTitle>
+                <CloseButton Clicked="CloseEditEquityOptionSecurityModal" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@EditValidationsRef" Model="@EditingEquityOptionSecurity" ValidateOnLoad="false">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Name"]</FieldLabel>
+                            <TextEdit @bind-Text="@EditingEquityOptionSecurity.Name">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Description"]</FieldLabel>
+                            <TextEdit @bind-Text="@EditingEquityOptionSecurity.Description">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Field>
+                        <FieldLabel>@L["SecurityParentGroup"]</FieldLabel>
+                        <SelectList TItem="ParentType"
+                                    TValue="int"
+                                    Data="Enum.GetValues<ParentType>()"
+                                    TextField="@((item)=>item.ToString())"
+                                    ValueField="@((item)=>(int)item)"
+                                    SelectedValue="EditingSecurityParentGroupId"
+                                    SelectedValueChanged="EditingParentGroupChanged">
+                        </SelectList>
+                    </Field>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["SecurityParent"]</FieldLabel>
+                            <SelectList TItem="SecurityParent"
+                                        TValue="Guid"
+                                        Data="@EditingSecurityParentList"
+                                        TextField="@((item)=>item.DisplayName)"
+                                        ValueField="@((item)=>item.Id)"
+                                        @bind-SelectedValue="@EditingEquityOptionSecurity.ParentId"
+                                        DefaultItemText="Choose your security parent group">
+                            </SelectList>
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>@L["UnderlyingSecurity"]</FieldLabel>
+                            <SelectList TItem="UnderlyingSecurity"
+                                        TValue="Guid"
+                                        Data="@UnderlyingSecurityList"
+                                        TextField="@((item)=>item.DisplayName)"
+                                        ValueField="@((item)=>item.Id)"
+                                        @bind-SelectedValue="@EditingEquityOptionSecurity.UnderlyingId"
+                                        DefaultItemText="Choose your underlying security">
+                            </SelectList>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseEditEquityOptionSecurityModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="UpdateEquityOptionSecurityAsync">
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
