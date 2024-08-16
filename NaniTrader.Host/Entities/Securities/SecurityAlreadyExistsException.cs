@@ -8,6 +8,7 @@ using Volo.Abp;
 
 namespace NaniTrader.Entities.Securities
 {
+    // TODO do not respond user error with id values
     public class SecurityAlreadyExistsException : BusinessException
     {
         public SecurityAlreadyExistsException(Guid parentId, string name)

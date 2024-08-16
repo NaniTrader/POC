@@ -54,7 +54,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -77,11 +78,12 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brokers");
+                    b.ToTable("NaniBrokers", "Brkr");
                 });
 
             modelBuilder.Entity("NaniTrader.Entities.Exchanges.Exchange", b =>
@@ -114,7 +116,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -137,11 +140,12 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Exchanges");
+                    b.ToTable("NaniExchanges", "Exch");
                 });
 
             modelBuilder.Entity("NaniTrader.Entities.MarketData.MarketDataProvider", b =>
@@ -174,7 +178,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -197,11 +202,12 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("MarketDataProviders");
+                    b.ToTable("NaniMarketDataProviders", "MD");
                 });
 
             modelBuilder.Entity("NaniTrader.Entities.Misc.Country", b =>
@@ -211,11 +217,12 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Countries");
+                    b.ToTable("NaniCountries", "Misc");
                 });
 
             modelBuilder.Entity("NaniTrader.Entities.Securities.EquityFutureSecurity", b =>
@@ -248,7 +255,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -271,7 +279,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<Guid>("ParentId")
                         .HasColumnType("uniqueidentifier");
@@ -283,7 +292,7 @@ namespace NaniTrader.Migrations
 
                     b.HasIndex("UnderlyingId");
 
-                    b.ToTable("EquityFutureSecurities");
+                    b.ToTable("NaniEquityFutureSecurities", "Secr");
                 });
 
             modelBuilder.Entity("NaniTrader.Entities.Securities.EquityOptionSecurity", b =>
@@ -316,7 +325,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -339,7 +349,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<Guid>("ParentId")
                         .HasColumnType("uniqueidentifier");
@@ -351,7 +362,7 @@ namespace NaniTrader.Migrations
 
                     b.HasIndex("UnderlyingId");
 
-                    b.ToTable("EquityOptionSecurities");
+                    b.ToTable("NaniEquityOptionSecurities", "Secr");
                 });
 
             modelBuilder.Entity("NaniTrader.Entities.Securities.EquitySecurity", b =>
@@ -384,7 +395,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -407,14 +419,15 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<Guid>("ParentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.ToTable("EquitySecurities");
+                    b.ToTable("NaniEquitySecurities", "Secr");
                 });
 
             modelBuilder.Entity("NaniTrader.Entities.Securities.IndexFutureSecurity", b =>
@@ -447,7 +460,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -470,7 +484,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<Guid>("ParentId")
                         .HasColumnType("uniqueidentifier");
@@ -482,7 +497,7 @@ namespace NaniTrader.Migrations
 
                     b.HasIndex("UnderlyingId");
 
-                    b.ToTable("IndexFutureSecurities");
+                    b.ToTable("NaniIndexFutureSecurities", "Secr");
                 });
 
             modelBuilder.Entity("NaniTrader.Entities.Securities.IndexOptionSecurity", b =>
@@ -515,7 +530,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -538,7 +554,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<Guid>("ParentId")
                         .HasColumnType("uniqueidentifier");
@@ -550,7 +567,7 @@ namespace NaniTrader.Migrations
 
                     b.HasIndex("UnderlyingId");
 
-                    b.ToTable("IndexOptionSecurities");
+                    b.ToTable("NaniIndexOptionSecurities", "Secr");
                 });
 
             modelBuilder.Entity("NaniTrader.Entities.Securities.IndexSecurity", b =>
@@ -583,7 +600,8 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -606,14 +624,15 @@ namespace NaniTrader.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<Guid>("ParentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.ToTable("IndexSecurities");
+                    b.ToTable("NaniIndexSecurities", "Secr");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
@@ -2366,7 +2385,7 @@ namespace NaniTrader.Migrations
                     b.HasOne("NaniTrader.Entities.Securities.EquitySecurity", "Underlying")
                         .WithMany()
                         .HasForeignKey("UnderlyingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Underlying");
@@ -2377,7 +2396,7 @@ namespace NaniTrader.Migrations
                     b.HasOne("NaniTrader.Entities.Securities.EquitySecurity", "Underlying")
                         .WithMany()
                         .HasForeignKey("UnderlyingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Underlying");
@@ -2388,7 +2407,7 @@ namespace NaniTrader.Migrations
                     b.HasOne("NaniTrader.Entities.Securities.IndexSecurity", "Underlying")
                         .WithMany()
                         .HasForeignKey("UnderlyingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Underlying");
@@ -2399,7 +2418,7 @@ namespace NaniTrader.Migrations
                     b.HasOne("NaniTrader.Entities.Securities.IndexSecurity", "Underlying")
                         .WithMany()
                         .HasForeignKey("UnderlyingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Underlying");

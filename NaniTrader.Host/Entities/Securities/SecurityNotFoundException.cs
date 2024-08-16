@@ -8,6 +8,7 @@ using Volo.Abp;
 
 namespace NaniTrader.Entities.Securities
 {
+    // TODO do not respond user error with id values
     public class SecurityNotFoundException : BusinessException
     {
         public SecurityNotFoundException(Guid id)

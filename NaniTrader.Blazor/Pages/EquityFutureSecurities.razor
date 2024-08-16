@@ -228,7 +228,8 @@
                                         Data="@UnderlyingSecurityList"
                                         TextField="@((item)=>item.DisplayName)"
                                         ValueField="@((item)=>item.Id)"
-                                        @bind-SelectedValue="@EditingEquityFutureSecurity.UnderlyingId">
+                                        @bind-SelectedValue="@EditingEquityFutureSecurity.UnderlyingId"
+                                        DefaultItemText="Choose your underlying security">
                             </SelectList>
                         </Field>
                     </Validation>

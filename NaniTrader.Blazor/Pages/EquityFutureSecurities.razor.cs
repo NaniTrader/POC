@@ -221,27 +221,40 @@ namespace NaniTrader.Pages
             if (newParentGroupId == 1)
             {
                 if (EditingSecurityParentGroupId != newParentGroupId)
+                {
                     EditingEquityFutureSecurity.ParentId = default;
+                    EditingEquityFutureSecurity.UnderlyingId = default;
+                }
+                    
                 EditingSecurityParentGroupId = newParentGroupId;
                 EditingSecurityParentList = MasterSecurityParentList.Where(x => x.ParentType == ParentType.Exchange).ToList();
             }
             else if (newParentGroupId == 2)
             {
                 if (EditingSecurityParentGroupId != newParentGroupId)
+                {
                     EditingEquityFutureSecurity.ParentId = default;
+                    EditingEquityFutureSecurity.UnderlyingId = default;
+                }
+
                 EditingSecurityParentGroupId = newParentGroupId;
                 EditingSecurityParentList = MasterSecurityParentList.Where(x => x.ParentType == ParentType.Broker).ToList();
             }
             else if (newParentGroupId == 3)
             {
                 if (EditingSecurityParentGroupId != newParentGroupId)
+                {
                     EditingEquityFutureSecurity.ParentId = default;
+                    EditingEquityFutureSecurity.UnderlyingId = default;
+                }
+
                 EditingSecurityParentGroupId = newParentGroupId;
                 EditingSecurityParentList = MasterSecurityParentList.Where(x => x.ParentType == ParentType.MarketDataProvider).ToList();
             }
             else
             {
                 EditingEquityFutureSecurity.ParentId = default;
+                EditingEquityFutureSecurity.UnderlyingId = default;
                 EditingSecurityParentGroupId = newParentGroupId;
                 EditingSecurityParentList = new List<SecurityParent>();
             }

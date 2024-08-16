@@ -53,6 +53,5 @@ public class NaniTraderDbContext : AbpDbContext<NaniTraderDbContext>
         builder.ConfigureNaniTraderMarketData(this);
         builder.ConfigureNaniTraderMisc(this);
         builder.ConfigureNaniTraderSecurities(this);
-        builder.ConfigureNaniTraderNavigations();
     }
 }

@@ -39,7 +39,6 @@ namespace NaniTrader.Entities.Securities
             Check.NotDefaultOrNull<Guid>(parentId, nameof(parentId));
             Check.NotNullOrWhiteSpace(name, nameof(name), SecurityConsts.MaxNameLength, SecurityConsts.MinNameLength);
             Check.NotNullOrWhiteSpace(description, nameof(description), SecurityConsts.MaxDescriptionLength, SecurityConsts.MinDescriptionLength);
-
             var existingEquitySecurity = await _equitySecurityRepository.FindByParentIdAndNameAsync(parentId, name);
             if (existingEquitySecurity != null)
             {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Blazorise;
+using Microsoft.AspNetCore.Authorization;
 using NaniTrader.Entities.Brokers;
 using NaniTrader.Entities.Securities;
 using NaniTrader.Services.Brokers;
@@ -17,7 +18,7 @@ namespace NaniTrader.Services.Securities
     public class SecurityAppService : NaniTraderAppService, ISecurityAppService
     {
         // TODO Assess logic before updating the parentId or underlyingId for a given security.
-        // Underlying future and option should have same parent at any given time
+        // Underlying future and option should have same parent type at any given time
         private readonly IEquitySecurityRepository _equitySecurityRepository;
         private readonly IEquityFutureSecurityRepository _equityFutureSecurityRepository;
         private readonly IEquityOptionSecurityRepository _equityOptionSecurityRepository;
@@ -115,8 +116,9 @@ namespace NaniTrader.Services.Securities
 
         public async Task<EquityFutureSecurityDto> GetEquityFutureSecurityAsync(Guid id)
         {
-            var equitySecurity = await _equityFutureSecurityRepository.GetAsync(id);
-            return ObjectMapper.Map<EquityFutureSecurity, EquityFutureSecurityDto>(equitySecurity);
+            var equityFutureSecurity = await _equityFutureSecurityRepository.GetAsync(id);
+            await _equityFutureSecurityRepository.EnsurePropertyLoadedAsync(equityFutureSecurity, x => x.Underlying);
+            return ObjectMapper.Map<EquityFutureSecurity, EquityFutureSecurityDto>(equityFutureSecurity);
         }
 
         public async Task<PagedResultDto<EquityFutureSecurityInListDto>> GetEquityFutureSecurityPagedListWithNameFilterAsync(EquityFutureSecurityListFilterDto input)
@@ -163,6 +165,7 @@ namespace NaniTrader.Services.Securities
         public async Task UpdateEquityFutureSecurityAsync(Guid id, CreateUpdateEquityFutureSecurityDto input)
         {
             var equityFutureSecurity = await _equityFutureSecurityRepository.GetAsync(id);
+            await _equityFutureSecurityRepository.EnsurePropertyLoadedAsync(equityFutureSecurity, x => x.Underlying);
 
             if (equityFutureSecurity.Name != input.Name)
             {
@@ -191,6 +194,7 @@ namespace NaniTrader.Services.Securities
         public async Task<EquityOptionSecurityDto> GetEquityOptionSecurityAsync(Guid id)
         {
             var equityOptionSecurity = await _equityOptionSecurityRepository.GetAsync(id);
+            await _equityOptionSecurityRepository.EnsurePropertyLoadedAsync(equityOptionSecurity, x => x.Underlying);
             return ObjectMapper.Map<EquityOptionSecurity, EquityOptionSecurityDto>(equityOptionSecurity);
         }
 
@@ -238,6 +242,7 @@ namespace NaniTrader.Services.Securities
         public async Task UpdateEquityOptionSecurityAsync(Guid id, CreateUpdateEquityOptionSecurityDto input)
         {
             var equityOptionSecurity = await _equityOptionSecurityRepository.GetAsync(id);
+            await _equityOptionSecurityRepository.EnsurePropertyLoadedAsync(equityOptionSecurity, x => x.Underlying);
 
             if (equityOptionSecurity.Name != input.Name)
             {
@@ -335,6 +340,7 @@ namespace NaniTrader.Services.Securities
         public async Task<IndexFutureSecurityDto> GetIndexFutureSecurityAsync(Guid id)
         {
             var indexFutureSecurity = await _indexFutureSecurityRepository.GetAsync(id);
+            await _indexFutureSecurityRepository.EnsurePropertyLoadedAsync(indexFutureSecurity, x => x.Underlying);
             return ObjectMapper.Map<IndexFutureSecurity, IndexFutureSecurityDto>(indexFutureSecurity);
         }
 
@@ -382,6 +388,7 @@ namespace NaniTrader.Services.Securities
         public async Task UpdateIndexFutureSecurityAsync(Guid id, CreateUpdateIndexFutureSecurityDto input)
         {
             var indexFutureSecurity = await _indexFutureSecurityRepository.GetAsync(id);
+            await _indexFutureSecurityRepository.EnsurePropertyLoadedAsync(indexFutureSecurity, x => x.Underlying);
 
             if (indexFutureSecurity.Name != input.Name)
             {
@@ -410,6 +417,7 @@ namespace NaniTrader.Services.Securities
         public async Task<IndexOptionSecurityDto> GetIndexOptionSecurityAsync(Guid id)
         {
             var indexOptionSecurity = await _indexOptionSecurityRepository.GetAsync(id);
+            await _indexOptionSecurityRepository.EnsurePropertyLoadedAsync(indexOptionSecurity, x => x.Underlying);
             return ObjectMapper.Map<IndexOptionSecurity, IndexOptionSecurityDto>(indexOptionSecurity);
         }
 
@@ -457,6 +465,7 @@ namespace NaniTrader.Services.Securities
         public async Task UpdateIndexOptionSecurityAsync(Guid id, CreateUpdateIndexOptionSecurityDto input)
         {
             var indexOptionSecurity = await _indexOptionSecurityRepository.GetAsync(id);
+            await _indexOptionSecurityRepository.EnsurePropertyLoadedAsync(indexOptionSecurity, x => x.Underlying);
 
             if (indexOptionSecurity.Name != input.Name)
             {

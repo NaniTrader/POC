@@ -77,12 +77,22 @@ namespace NaniTrader.Data
                 b.Property(x => x.Description).IsRequired().HasMaxLength(SecurityConsts.MaxDescriptionLength);
             });
 
+            builder.Entity<EquityFutureSecurity>(b =>
+            {
+                b.HasOne(e => e.Underlying).WithMany().HasForeignKey("UnderlyingId").IsRequired().OnDelete(DeleteBehavior.NoAction);
+            });
+
             builder.Entity<EquityOptionSecurity>(b =>
             {
                 b.ToTable(NaniTraderConsts.DbTablePrefix + nameof(naniTraderDbContext.EquityOptionSecurities), NaniTraderConsts.DbSchemaSecr);
                 b.ConfigureByConvention(); //auto configure for the base class props
                 b.Property(x => x.Name).IsRequired().HasMaxLength(SecurityConsts.MaxNameLength);
                 b.Property(x => x.Description).IsRequired().HasMaxLength(SecurityConsts.MaxDescriptionLength);
+            });
+
+            builder.Entity<EquityOptionSecurity>(b =>
+            {
+                b.HasOne(e => e.Underlying).WithMany().HasForeignKey("UnderlyingId").IsRequired().OnDelete(DeleteBehavior.NoAction);
             });
 
             builder.Entity<IndexSecurity>(b =>
@@ -101,6 +111,11 @@ namespace NaniTrader.Data
                 b.Property(x => x.Description).IsRequired().HasMaxLength(SecurityConsts.MaxDescriptionLength);
             });
 
+            builder.Entity<IndexFutureSecurity>(b =>
+            {
+                b.HasOne(e => e.Underlying).WithMany().HasForeignKey("UnderlyingId").IsRequired().OnDelete(DeleteBehavior.NoAction);
+            });
+
             builder.Entity<IndexOptionSecurity>(b =>
             {
                 b.ToTable(NaniTraderConsts.DbTablePrefix + nameof(naniTraderDbContext.IndexOptionSecurities), NaniTraderConsts.DbSchemaSecr);
@@ -108,10 +123,11 @@ namespace NaniTrader.Data
                 b.Property(x => x.Name).IsRequired().HasMaxLength(SecurityConsts.MaxNameLength);
                 b.Property(x => x.Description).IsRequired().HasMaxLength(SecurityConsts.MaxDescriptionLength);
             });
-        }
 
-        public static void ConfigureNaniTraderNavigations(this ModelBuilder builder)
-        {
+            builder.Entity<IndexOptionSecurity>(b =>
+            {
+                b.HasOne(e => e.Underlying).WithMany().HasForeignKey("UnderlyingId").IsRequired().OnDelete(DeleteBehavior.NoAction);
+            });
         }
     }
 }
